@@ -13,8 +13,8 @@ interface CardProps {
 export function Card({ title, text, icon, href }: CardProps) {
   return (
     <Link href={href}
-      className="group flex gap-3 rounded-xl border border-primary p-5 hover:bg-primary-hover transition-colors">
-      <div className="flex justify-center items-center w-[50px] h-[50px] p-2 border rounded-lg border-primary
+      className="group flex gap-3 items-center rounded-xl border border-primary p-5 hover:bg-primary-hover transition-colors">
+      <div className="flex justify-center items-center w-[48px] h-[48px] p-2 border rounded-lg border-primary
        text-primary text-2xl group-hover:text-white group-hover:bg-primary transition-colors">
         {icon}
       </div>
