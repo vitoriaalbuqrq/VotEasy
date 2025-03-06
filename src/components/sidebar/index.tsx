@@ -37,7 +37,7 @@ export function Sidebar() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/dashboard/votes"
+                  href="/dashboard/voting"
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Vote className="h-5 w-5" />
