@@ -24,7 +24,7 @@ const Step3 = () => {
       <CardHeader className="pl-0">
         <CardTitle>{"Adicione os Candidatos"}</CardTitle>
         <CardDescription>
-          {"Adicione pelo menos dois candidatos. Insira os nomes e números dos candidatos para serem incluídos na votação."}
+          {"Adicione pelo menos dois candidatos. Insira os nomes e números (opcional) dos candidatos para serem incluídos na votação."}
         </CardDescription>
       </CardHeader>
 
