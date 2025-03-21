@@ -13,7 +13,7 @@ contract Voteasy {
         uint id;
         string name;
         uint number; 
-        string party;
+        string party; 
         uint votes;
     }
 
@@ -22,9 +22,7 @@ contract Voteasy {
         string name;
         string description;
         uint startDate;
-        uint startTime;
         uint endDate;
-        uint endTime;
         Status status;
         uint winnerIndex;
     }
@@ -55,9 +53,7 @@ contract Voteasy {
         string memory _name,
         string memory _description,
         uint _startDate,
-        uint _startTime,
         uint _endDate,
-        uint _endTime,
         string[] memory _candidateNames,
         uint[] memory _candidateNumbers,
         string[] memory _candidateParties,
@@ -72,9 +68,7 @@ contract Voteasy {
             name: _name,
             description: _description,
             startDate: _startDate,
-            startTime: _startTime,
             endDate: _endDate,
-            endTime: _endTime,
             status: _status,
             winnerIndex: type(uint).max // Inicialmente sem vencedor
         });
@@ -125,18 +119,24 @@ contract Voteasy {
         return winnerIndex;
     }
 
-    function getWinner(uint _votingId) public view returns (Candidate memory winner) {
+    function getWinner(uint _votingId) public view 
+        returns (uint id, string memory name, uint number, string memory party, uint votes) 
+    {
         require(votings[_votingId].status == Status.finalized, "Votacao nao finalizada");
         require(votings[_votingId].status != Status.canceled, "A votacao foi cancelada");
 
         uint winnerIndex = votings[_votingId].winnerIndex;
         require(winnerIndex != type(uint).max, "Nenhum vencedor encontrado");
 
-        return candidates[_votingId][winnerIndex];
+        Candidate memory winner = candidates[_votingId][winnerIndex];
+        return (winner.id, winner.name, winner.number, winner.party, winner.votes);
     }
+
 
     function vote(uint _votingId, uint _candidateId) public votingIsActive(_votingId) {
         require(!hasVoted[_votingId][msg.sender], "Voce ja votou nesta votacao!");
+        require(block.timestamp >= votings[_votingId].startDate && block.timestamp <= votings[_votingId].endDate,
+        "Votacao fora do periodo permitido");
         require(_candidateId < candidates[_votingId].length, "Candidato invalido");
 
         candidates[_votingId][_candidateId].votes++;
@@ -145,8 +145,50 @@ contract Voteasy {
         emit VoteCast(_votingId, _candidateId, msg.sender);
     }
 
-    function getCandidate(uint _candidateId, uint _votingId) public view returns (string memory _name, uint _number, string memory _party, uint _votes) {
+    function getCandidate(uint _candidateId, uint _votingId) public view 
+    returns (uint id, string memory name, uint number, string memory party, uint votes) {
         Candidate memory candidate = candidates[_votingId][_candidateId];
-        return (candidate.name, candidate.number, candidate.party, candidate.votes);
+        return (candidate.id, candidate.name, candidate.number, candidate.party, candidate.votes);
+    }
+
+    function getCandidatesByVoting (uint _votingId) public view returns (Candidate[] memory){
+        Candidate[] memory candidateList = new Candidate[](candidates[_votingId].length); // Use o array da votação específica
+        for (uint i = 0; i < candidates[_votingId].length; i++) {
+            candidateList[i] = candidates[_votingId][i];
+        }
+        return candidateList;
+    }
+    
+    function getAllVotings() public view returns(Voting[] memory){
+        Voting[] memory votingList = new Voting[](votingCount);
+        for (uint i = 0; i < votingCount; i++) {
+            votingList[i] = votings[i];
+        }
+        return votingList;
+    }
+
+    function getVoting(uint _votingId) public view 
+    returns (
+        uint id,
+        string memory name,
+        string memory description,
+        uint startDate,
+        uint endDate,
+        Status status,
+        uint winnerIndex
+    ) {
+        require(_votingId < votingCount, "Votacao nao encontrada");
+
+        Voting storage voting = votings[_votingId];
+
+        return (
+            voting.id,
+            voting.name,
+            voting.description,
+            voting.startDate,
+            voting.endDate,
+            voting.status,
+            voting.winnerIndex
+        );
     }
 }
