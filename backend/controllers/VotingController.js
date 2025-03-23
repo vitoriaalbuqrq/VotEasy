@@ -5,6 +5,7 @@ const CONTRACT_ABI = require("../config");
 const CONTRACT_ADDRESS = require("../config");
 const { parseDateTimeToTimestamp } = require("../utils/dateUtils");
 
+//TODO: Melhorar as validações e tratamentos de erros
 function initContract() {
   const network = process.env.ETHEREUM_NETWORK;
 

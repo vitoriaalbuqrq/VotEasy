@@ -21,7 +21,7 @@ export function Card({candidateName, number, id}: CardProps) {
       <h2 className="font-bold text-gray-500">{number}</h2>
       <div className="flex gap-3 w-full mt-2">
         <button className="flex-1 px-5 py-2 font-bold uppercase border border-secondary text-secondary text-center rounded-full hover:opacity-90 transition-colors">Detalhes</button>
-        <button className="flex-1 px-5 py-2 font-bold uppercase bg-secondary text-white text-center rounded-full hover:opacity-90 transition-colors">Votar</button>
+        <button className="flex-1 px-5 py-2 font-bold uppercase bg-tertiary text-white text-center rounded-full hover:opacity-90 transition-colors">Votar</button>
       </div>
     </div>
   )

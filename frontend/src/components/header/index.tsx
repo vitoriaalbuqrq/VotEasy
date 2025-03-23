@@ -11,8 +11,8 @@ export function Header() {
         </Link>
 
         <div className="flex items-baseline gap-7 uppercase">
-          <Link href="/votings" className="hover:bg-primary-hover hover:px-3 hover:py-2 hover:rounded-full transition-transform duration-300">Votações</Link>
-          <Link href="/dashboard" className="hover:bg-primary-hover hover:px-3 hover:py-2 hover:rounded-full transition-transform duration-300">Dashboard</Link>
+          <Link href="/votings" className="hover:bg-primary-hover px-3 py-2 hover:rounded-full transition-transform duration-300">Votações</Link>
+          <Link href="/dashboard" className="hover:bg-primary-hover px-3 py-2 hover:rounded-full transition-transform duration-300">Dashboard</Link>
           <LinkButton href="/auth" text="Login" />
         </div>
 

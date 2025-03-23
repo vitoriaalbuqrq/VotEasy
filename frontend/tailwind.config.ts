@@ -23,7 +23,7 @@ export default {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
   			},
-  			tertiary: '80CED7',
+  			tertiary: 'hsl(var(--tertiary))',
   			background: 'hsl(var(--background))',
   			'primary-hover': 'hsl(var(--primary-hover))',
   			'light-gray': 'hsl(var(--light-gray))',
