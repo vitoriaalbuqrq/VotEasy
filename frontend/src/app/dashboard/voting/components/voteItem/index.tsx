@@ -14,10 +14,10 @@ export function VoteItem() {
           <VoteStatus status="Ativa"/>
         </td>
         <td className="text-left hidden sm:table-cell">
-          10/5/3633
+          10/03/2025
         </td>
         <td className="text-left">
-          Pública
+          10/05/2025
         </td>
         <td className="text-center">
           5
@@ -25,7 +25,7 @@ export function VoteItem() {
         <td className="align-middle">
           <div className="flex flex-col sm:flex-row gap-2">
             <button className="bg-gray-300 text-gray-700 font-medium rounded-full px-3 py-2 mr-2 hover:text-red-800 hover:bg-red-200 whitespace-nowrap">
-              Parar Votação
+              Cancelar
             </button>
             <Link href="#" className="bg-secondary text-white font-medium rounded-full px-3 py-2 mr-2 hover:opacity-90 whitespace-nowrap">
               Ver Detalhes

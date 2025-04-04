@@ -1,8 +1,8 @@
 require("dotenv").config();
 const Web3 = require("web3").default;
 
-const CONTRACT_ABI = require("../config");
-const CONTRACT_ADDRESS = require("../config");
+const CONTRACT_ABI = require("../config/contract/config");
+const CONTRACT_ADDRESS = require("../config/contract/config");
 const { parseDateTimeToTimestamp } = require("../utils/dateUtils");
 
 //TODO: Melhorar as validações e tratamentos de erros

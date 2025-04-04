@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Ubuntu } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const mainFontFAmily = Roboto({
+const mainFontFamily = Ubuntu({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
   variable: "--font-family-main",
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("min-h-screen font-sans antialiased", mainFontFAmily.variable)}>
+    <html lang="en" className={cn("min-h-screen font-sans antialiased", mainFontFamily.variable)}>
       <body>
         {children}
       </body>

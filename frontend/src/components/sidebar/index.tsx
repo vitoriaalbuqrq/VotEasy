@@ -37,7 +37,7 @@ export function Sidebar() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/dashboard/voting"
+                  href="/dashboard/votings"
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Vote className="h-5 w-5" />
@@ -79,14 +79,7 @@ export function Sidebar() {
                   <Home className="h-5 w-5 transition-all" />
                   Início
                 </Link>
-                <Link
-                  href="/dashboard/votes"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-primary"
-                  prefetch={false}
-                >
-                  <Vote className="h-5 w-5 transition-all" />
-                  Minhas votações
-                </Link>
+              
               </nav>
             </SheetContent>
           </Sheet>
