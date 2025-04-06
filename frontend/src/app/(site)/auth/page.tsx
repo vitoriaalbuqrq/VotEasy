@@ -24,7 +24,7 @@ export default function AuthPage() {
             title="Votante"
             text="Vote de forma rápida, segura e transparente."
             icon={<FaVoteYea />}
-            href="/votings" //TODO: mudar o redirecionamento para login do user/votante
+            href="/auth/organizer/login" //TODO: mudar o redirecionamento para login do user/votante
           />
           <Card
             title="Organizador"
