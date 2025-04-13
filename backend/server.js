@@ -8,7 +8,13 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors());
+const cookieParser = require("cookie-parser");
+app.use(cookieParser()); 
+
+app.use(cors({
+  origin: "http://localhost:3000", 
+  credentials: true,
+}));
 
 app.use(
   session({
@@ -25,6 +31,6 @@ app.use(passport.session());
 const routes = require("./routes/router"); 
 app.use("/api", routes);
 
-app.listen(3000, function () {
+app.listen(3333, function () {
   console.log("Servidor online!");
 })

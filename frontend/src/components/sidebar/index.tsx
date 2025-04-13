@@ -1,11 +1,29 @@
+'use client'
+
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { CircleCheckBig, Home, Package, PanelBottom, Plus, Vote } from "lucide-react";
+import { FiLogOut } from "react-icons/fi";
+import api from "@/lib/axios/config";
+import { useRouter } from "next/navigation";
 
 export function Sidebar() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+   try {
+    await api.get('auth/logout')
+
+    router.push("auth")
+   }catch (err)  {
+    console.error("Erro ao fazer logout", err);
+   }
+  }
+  
   return (
+
     <div className="flex w-full flex-col bg-muted/40">
 
       <aside
@@ -46,6 +64,18 @@ export function Sidebar() {
               </TooltipTrigger>
               <TooltipContent side="right">Minhas votações</TooltipContent>
             </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild className="mt-auto">
+                <button onClick={handleLogout}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary"
+                  >
+                  <FiLogOut className="h-5 w-5"/>
+                  <span className="sr-only">Sair</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Sair</TooltipContent>
+            </Tooltip>
             
           </TooltipProvider>
         </nav>
@@ -79,8 +109,13 @@ export function Sidebar() {
                   <Home className="h-5 w-5 transition-all" />
                   Início
                 </Link>
-              
+                
+                <button onClick={handleLogout}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary">
+                  <FiLogOut className="h-5 w-5"/>
+                </button>
               </nav>
+
             </SheetContent>
           </Sheet>
         </header>

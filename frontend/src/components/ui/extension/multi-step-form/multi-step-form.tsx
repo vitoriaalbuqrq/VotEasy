@@ -1,6 +1,6 @@
 "use client";
 import { containerMultiStepForm as container } from "@/constants/framer-motion";
-import { VotingFormContext } from "@/app/dashboard/voting/new/multi-step-form/_components/multi-step-voting-config";
+import { VotingFormContext } from "@/app/(private)/dashboard/voting/new/multi-step-form/_components/multi-step-voting-config";
 import { useMultiStepForm } from "@/hooks/multi-step-form";
 import { motion } from "framer-motion";
 import { Form } from "@/components/ui/form";

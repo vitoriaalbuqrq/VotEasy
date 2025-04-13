@@ -4,7 +4,7 @@ const oauthController = require("../controllers/oAuthController");
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
-router.post("/confirm", authController.confirmEmail);
+router.get("/confirm", authController.confirmEmail);
 
 // Google OAuth
 router.get("/auth/google", oauthController.googleAuth);

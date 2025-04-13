@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const authController = {
   register: async (req, res) => {
-    const { name, email, password, confirmpassword } = req.body;
+    const { name, email, password } = req.body;
     if (!name) {
       return res.status(422).json({ msg: "O nome é obrigatório." });
     }
@@ -16,9 +16,6 @@ const authController = {
     }
     if (!password) {
       return res.status(422).json({ msg: "O password é obrigatório." });
-    }
-    if (password !== confirmpassword) {
-      return res.status(422).json({ msg: "As senhas não conferem!" });
     }
 
     const userExists = await prisma.user.findUnique({ where: { email } });
@@ -55,7 +52,7 @@ const authController = {
         to: user.email,
         subject:
           "Confirme seu email clicando no link abaixo e comece a utilizar o app.",
-        text: `http://localhost:3000/confirm?token=${user.validation_id}`,
+        text: `http://localhost:3333/api/auth/confirm?token=${user.validation_id}`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
@@ -75,10 +72,10 @@ const authController = {
     const { email, password } = req.body;
 
     if (!email) {
-      return res.status(422).json({ msg: "O nome é obrigatório." });
+      return res.status(422).json({ msg: "O email é obrigatório." });
     }
     if (!password) {
-      return res.status(422).json({ msg: "O email é obrigatório." });
+      return res.status(422).json({ msg: "A senha é obrigatório." });
     }
     //check if user exists
     const user = await prisma.user.findUnique({ where: { email } });
@@ -110,7 +107,9 @@ const authController = {
         secret
       );
 
-      res.status(200).json({ msg: "Autenticação realizada com sucesso", token });
+      res
+        .status(200)
+        .json({ msg: "Autenticação realizada com sucesso", token });
     } catch (error) {
       console.log(error);
       res.status(500).json({ msg: "Erro no sevidor!" });
@@ -118,29 +117,30 @@ const authController = {
   },
 
   confirmEmail: async (req, res) => {
-    const { token } = req.body
+    const { token } = req.query;
 
-  const user = await prisma.user.findFirst({
-    where: {
-      validation_id: token
+    const user = await prisma.user.findFirst({
+      where: {
+        validation_id: token,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).send();
     }
-  })
 
-  if (!user) {
-    return res.status(404).send()
-  }
-
-  await prisma.user.update({
-    data: {
-      checked: new Date(),
-      validation_id: ''
-    },
-    where: {
-      id: user.id
-    }
-  })
-  return res.status(200).json({msg: "Email confirmado com sucesso."})
-  }
+    await prisma.user.update({
+      data: {
+        checked: new Date(),
+        validation_id: "",
+      },
+      where: {
+        id: user.id,
+      },
+    });
+    return res.redirect("http://localhost:3000/auth/organizer/login?emailConfirmed=true");
+    //return res.status(200).json({ msg: "Email confirmado com sucesso." });
+  },
 };
 
 module.exports = authController;
