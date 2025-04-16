@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Ubuntu } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
 const mainFontFamily = Ubuntu({
   weight: ["400", "500", "700"],
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en" className={cn("min-h-screen font-sans antialiased", mainFontFamily.variable)}>
       <body>
         {children}
+        <Toaster />
       </body>
     </html>
   );

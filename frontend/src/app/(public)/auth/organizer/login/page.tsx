@@ -1,8 +1,11 @@
 'use client'
 import { Container } from "@/components/container";
+import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/axios/config";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Variable } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { z } from 'zod';
@@ -21,6 +24,7 @@ const registerFormSchema = z.object({
 type FormData = z.infer<typeof registerFormSchema>;
 
 export default function OrganizerLogin() {
+  const { toast } = useToast();
   const router = useRouter();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -30,35 +34,44 @@ export default function OrganizerLogin() {
   const searchParams = useSearchParams();
   const emailConfirmed = searchParams.get('emailConfirmed') === 'true';
 
+  useEffect(() => {
+    if (emailConfirmed) {
+      setTimeout(() => {
+        toast({
+          variant: "success",
+          title: "Email confirmado com sucesso!",
+          description: "Faça login para acessar sua conta.",
+        })
+      }, 500);
+    }
+  }, [emailConfirmed]);
+
   const handleFormSubmit = async (data: FormData) => {
     try {
       const res = await api.post("auth/login", {
         email: data.email,
         password: data.password
       });
-      console.log("Login bem-sucedido:", res.data);
       // redireciona após login
-      //router.push("/dashboard");
+      router.push("/dashboard");
     } catch (error: any) {
-      if (error.response?.data?.msg) {
-        console.error("Erro da API:", error.response.data.msg);
-      } else {
-        console.error("Erro inesperado:", error.message);
-      }
+      const msg = error.response?.data?.msg || "Ocorreu um erro inesperado. Tente novamente mais tarde."
+      toast({
+        variant: "error",
+        title: "Erro ao cadastrar!",
+        description: msg,
+      });
+      console.error("error ao registrar:", error)
     }
   }
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3333/api/auth/auth/google";
+  const handleGoogleLogin = (role: 'USER' | 'ORGANIZER') => {
+    const state = encodeURIComponent(role);
+    window.location.href = `http://localhost:3333/api/auth/auth/google?state=${state}`;
   };
 
   return (
     <Container>
-      {emailConfirmed && (
-        <div className="bg-green-100 text-green-800 p-3 rounded mb-4">
-          Email confirmado com sucesso. Faça login para acessar sua conta.
-        </div>
-      )}
       <div className="flex md:max-w-[55%] lg:max-w-[40%] m-auto bg-white flex-col justify-center px-6 py-12 lg:px-8 rounded-2xl shadow-sm">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-5 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Faça seu login</h2>
@@ -94,7 +107,7 @@ export default function OrganizerLogin() {
             </div>
           </form>
 
-          <button onClick={handleGoogleLogin}
+          <button onClick={() => handleGoogleLogin('ORGANIZER')}
             className="flex w-full border-2 gap-3 rounded-full justify-center items-center px-3 py-1.5 text-md font-semibold text-gray-700 shadow-xs hover:border-primary hover:text-primary">
             <FaGoogle />
             Entrar com Google

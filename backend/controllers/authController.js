@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const authController = {
   register: async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
     if (!name) {
       return res.status(422).json({ msg: "O nome é obrigatório." });
     }
@@ -36,6 +36,7 @@ const authController = {
           name,
           email,
           password: passwordHash,
+          role: role?.toUpperCase() === 'ORGANIZER' ? 'ORGANIZER' : 'USER',
         },
       });
 
@@ -61,7 +62,7 @@ const authController = {
         }
       });
 
-      res.status(200).json({ msg: "Usuario criado com sucesso!" });
+      res.status(200).json({ msg: "Cadastro realizado com sucesso!" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ msg: "Erro no sevidor!" });
@@ -103,13 +104,29 @@ const authController = {
       const token = jwt.sign(
         {
           id: user._id,
+          role: user.role,
         },
-        secret
+        secret,
+        { expiresIn: "7d" }
       );
 
-      res
-        .status(200)
-        .json({ msg: "Autenticação realizada com sucesso", token });
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 3600 * 1000,
+        path: "/",
+      });
+
+      res.status(200).json({
+        msg: "Autenticação realizada com sucesso",
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          role: user.role,
+        }
+      });      
     } catch (error) {
       console.log(error);
       res.status(500).json({ msg: "Erro no sevidor!" });

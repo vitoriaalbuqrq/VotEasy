@@ -1,5 +1,6 @@
 'use client'
 import { Container } from "@/components/container";
+import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/axios/config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -7,7 +8,6 @@ import { FaGoogle } from "react-icons/fa";
 import { z } from 'zod';
 
 //TODO: componentizar melhor
-
 const registerFormSchema = z.object({
   name: z.string().nonempty("O nome é obrigatório."),
   email: z.string()
@@ -26,6 +26,7 @@ const registerFormSchema = z.object({
 type FormData = z.infer<typeof registerFormSchema>;
 
 export default function OrganizerRegister() {
+  const { toast } = useToast()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(registerFormSchema)
@@ -36,21 +37,30 @@ export default function OrganizerRegister() {
       const res = await api.post("auth/register", {
         name: data.name,
         email: data.email,
-        password: data.password
+        password: data.password,
+        role: "ORGANIZER",
       });
-      console.log("Registro bem-sucedido:", res.data);
+      toast({
+        variant: "success",
+        title: res.data?.msg,
+        description: "Verifique seu e-mail para confirmar sua conta."
+      })
     } catch (error: any) {
-      if (error.res) {
-        console.error("Erro da API:", error.res.data.msg);
-      } else {
-        console.error("Erro inesperado:", error.message);
-      }
+      const msg = error.response?.data?.msg || "Ocorreu um erro inesperado. Tente novamente mais tarde."
+      toast({
+        variant: "error",
+        title: "Erro ao cadastrar!",
+        description: msg,
+      });
+      console.error("error ao registrar:", error)
     }
   }
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3333/api/auth/auth/google";
+  const handleGoogleLogin = (role: 'USER' | 'ORGANIZER') => {
+    const state = encodeURIComponent(role);
+    window.location.href = `http://localhost:3333/api/auth/auth/google?state=${state}`;
   };
+    
 
   return (
     <Container>
@@ -104,7 +114,7 @@ export default function OrganizerRegister() {
             </div>
           </form>
 
-          <button onClick={handleGoogleLogin}
+          <button onClick={() => handleGoogleLogin('ORGANIZER')}
             className="flex w-full border-2 gap-3 rounded-full justify-center items-center px-3 py-1.5 text-md font-semibold text-gray-700 shadow-xs hover:border-primary hover:text-primary">
             <FaGoogle />
             Entrar com Google

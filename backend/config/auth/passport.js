@@ -1,6 +1,6 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient, Role } = require("@prisma/client");
 const jwt = require("jsonwebtoken");
 
 const prisma = new PrismaClient();
@@ -11,8 +11,14 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "http://localhost:3333/api/auth/auth/google/callback",
+      passReqToCallback: true,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req, accessToken, refreshToken, profile, done) => {
+      //TODO: Resolver atribuição de role
+      const rawRole = req.query.state === 'ORGANIZER' ? 'ORGANIZER' : 'USER';
+      const role = Role[rawRole];
+      console.log("Callback com role:", role);
+
       try {
         let user = await prisma.user.findUnique({
           where: { email: profile.emails[0].value },
@@ -24,11 +30,14 @@ passport.use(
               name: profile.displayName,
               email: profile.emails[0].value,
               password: null,
+              role,
             },
           });
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        const token = jwt.sign(
+          { id: user._id, role: user.role }, 
+          process.env.SECRET, {
           expiresIn: "1h",
         });
 
