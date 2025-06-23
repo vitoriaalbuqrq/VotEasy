@@ -14,7 +14,7 @@ const VotingForm = () => {
 	return (
 		<MultiStepForm title="Nova Votação" description="Entre com as informações da votação">
 			<MultiStepNavbar context={VotingFormContext} />
-			<div className="flex flex-col flex-1 border rounded-lg p-3 min-w-fit">
+			<div className="flex flex-col flex-1 rounded-lg p-3 min-w-fit">
 				<motion.div variants={container} className="flex flex-col gap-2" initial="hidden" animate="visible" exit="exit">
 					<CurrentForm />
 				</motion.div>

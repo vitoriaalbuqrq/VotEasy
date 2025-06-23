@@ -16,7 +16,7 @@ const Step3 = () => {
   });
 
   function addCandidate() {
-    append({ name: "", number: 0 }); 
+    append({ name: "", number: 0 });
   }
 
   return (
@@ -36,13 +36,22 @@ const Step3 = () => {
             onClick={addCandidate}
             className="bg-gray-300 rounded-lg py-1 px-2 flex gap-1 justify-around items-center font-medium hover:bg-opacity-80"
           >
-            <FiPlus size={18}/>
+            <FiPlus size={18} />
             Adicionar
           </button>
         </label>
 
         {fields.map((field, index) => (
-          <Card key={field.id} className="rounded-lg p-4 flex items-center gap-2">
+          <Card key={field.id} className="rounded-lg p-4 flex items-center flex-wrap gap-2">
+            <div className="w-full text-end">
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="rounded-lg py-1 px-2 h-10 bg-red-200 text-red-800"
+              >
+                <FiTrash2 size={20} />
+              </button>
+            </div>
             <FormField
               control={control}
               name={`candidates.${index}.name`}
@@ -75,13 +84,21 @@ const Step3 = () => {
               )}
             />
 
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="bg-gray-300 rounded-lg py-1 px-2 flex-grow-0 h-10 mt-auto hover:bg-red-200 hover:text-red-800"
-            >
-              <FiTrash2 size={20}/>
-            </button>
+            <FormField
+              control={control}
+              name={`candidates.${index}.party`}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Partido (opcional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Partido do candidato" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
           </Card>
         ))}
       </div>

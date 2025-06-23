@@ -64,7 +64,7 @@ export default function OrganizerRegister() {
 
   return (
     <Container>
-      <div className="flex md:max-w-[55%] lg:max-w-[40%] m-auto bg-white flex-col justify-center px-6 py-12 lg:px-8 rounded-2xl shadow-sm">
+      <div className="flex md:max-w-[55%] lg:max-w-[40%] m-auto bg-white flex-col justify-center p-6 lg:px-8 rounded-2xl shadow-sm">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-5 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Crie sua conta</h2>
         </div>

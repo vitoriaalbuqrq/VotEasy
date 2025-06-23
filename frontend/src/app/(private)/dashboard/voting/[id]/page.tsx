@@ -26,7 +26,8 @@ export default function Voting() {
           <h1 className="font-bold text-2xl text-primary">Detalhes da Votação</h1>
           <p className="font-medium text-gray-500 text-lg">Nome da votação</p>
         </div>
-        <p className="font-medium text-gray-500">Status: <VoteStatus status="Finalizada" /> </p>
+        <p className="font-medium text-gray-500">Status:</p>
+        {/* <p className="font-medium text-gray-500">Status: <VoteStatus status={status} /> </p> */}
       </header>
       <section className="flex flex-col gap-2 sm:flex-row">
         <article>

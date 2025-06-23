@@ -9,11 +9,11 @@ interface StatusCardProps {
   color: "green-500" | "yellow-500" | "blue-500" | "red-500";
 }
 
-const borderClasses = {
-  "green-500": "border-s-green-500",
-  "yellow-500": "border-s-yellow-500",
-  "blue-500": "border-s-blue-500",
-  "red-500": "border-s-red-500",
+const bgIconClasses = {
+  "green-500": "bg-green-100",
+  "yellow-500": "bg-yellow-100",
+  "blue-500": "bg-blue-100",
+  "red-500": "bg-red-100",
 };
 
 const textClasses = {
@@ -25,14 +25,14 @@ const textClasses = {
 
 export function StatusCard({ icon, name, quant, color }: StatusCardProps) {
   return (
-    <Card className={clsx("border-s-4 flex-1", borderClasses[color])}>
-      <CardContent className="flex items-center justify-start p-4 gap-4">
-        <div className={clsx("text-5xl", textClasses[color])}>
-          {icon}
-        </div>
+    <Card className="flex-1">
+      <CardContent className="flex items-start justify-start p-4 gap-4">
         <div className="flex flex-col gap-2 items-center justify-center m-auto">
           <h1 className="font-medium text-gray-500">{name}</h1>
           <h2 className="text-3xl font-bold">{quant}</h2>
+        </div>
+        <div className={clsx("text-2xl p-2 rounded-lg", textClasses[color], bgIconClasses[color])}>
+          {icon}
         </div>
       </CardContent>
     </Card>

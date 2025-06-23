@@ -8,12 +8,21 @@ const checkToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(400).json({ msg: "Token inválido!" });
+    return res.status(403).json({ msg: "Token inválido!" });
   }
 };
 
-module.exports = { checkToken };
+function checkRole(requireRole) {
+  return (req, res, next) => {
+    if (req.user?.role !== requireRole) {
+      return res.status(403).json({ message: "Acesso negado!" });
+    }
+    next();
+  };
+}
+
+module.exports = { checkToken, checkRole };

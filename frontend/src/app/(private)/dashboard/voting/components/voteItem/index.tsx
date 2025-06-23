@@ -1,33 +1,49 @@
+'use client';
 import { LinkButton } from "@/components/linkButton";
 import Link from "next/link";
-import { FiEdit, FiFile, FiTrash2 } from "react-icons/fi";
 import { VoteStatus } from "../voteStatus";
+import { Status, Voting } from "@/types/voting";
 
-export function VoteItem() {
+type VotingProps = Pick<Voting, 'id' | 'name' | 'status' | 'startDate' | 'endDate' | 'qntCandidates'> & {
+  onCancel: (id: Voting['id']) => void;
+};
+
+export function VoteItem({ id, name, status, startDate, endDate, qntCandidates, onCancel }: VotingProps) {
+
   return (
     <>
       <tr className="border-b border-b-slate-200 h-16 last:border-b-0 bg-white">
         <td className="text-left pl-3 font-medium">
-          Votação presidencia acadêmica
+          {name}
         </td>
-        <td className="text-left">
-          <VoteStatus status="Ativa"/>
+        <td className="text-left pl-3">
+          <VoteStatus status={status} />
         </td>
-        <td className="text-left hidden sm:table-cell">
-          10/03/2025
+        <td className="text-left pl-3 hidden sm:table-cell">
+          {startDate}
         </td>
-        <td className="text-left">
-          10/05/2025
+        <td className="text-left pl-3">
+          {endDate}
         </td>
         <td className="text-center">
-          5
+          {qntCandidates}
         </td>
         <td className="align-middle">
           <div className="flex flex-col sm:flex-row gap-2">
-            <button className="bg-gray-300 text-gray-700 font-medium rounded-full px-3 py-2 mr-2 hover:text-red-800 hover:bg-red-200 whitespace-nowrap">
-              Cancelar
+
+            <button
+              onClick={() => onCancel(id)}
+              disabled={status === Status.Canceled}
+              className={`font-medium rounded-full px-3 py-1 mr-2 whitespace-nowrap border
+                ${status === Status.Canceled
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-gray-700 border-gray-700 hover:border-red-200 hover:text-red-800 hover:bg-red-200'}
+              `}
+            >
+              {status === Status.Canceled ? 'Cancelado' : 'Cancelar'}
             </button>
-            <Link href="#" className="bg-secondary text-white font-medium rounded-full px-3 py-2 mr-2 hover:opacity-90 whitespace-nowrap">
+
+            <Link href={`/dashboard/voting/${id}`} className="bg-secondary text-white font-medium rounded-full px-3 py-1 mr-2 hover:opacity-90 whitespace-nowrap">
               Ver Detalhes
             </Link>
           </div>

@@ -153,6 +153,39 @@ const votingController = {
     }
   },
 
+  getAllVotingsWithCandidates: async (req, res) => {
+    try {
+      const { smartContract } = initContract();
+      const votings = await smartContract.methods.getAllVotings().call();
+  
+      const votingsWithCounts = await Promise.all(
+        votings.map(async (voting, index) => {
+          const votingId = voting.id ?? index.toString();
+  
+          const candidates = await smartContract.methods
+            .getCandidatesByVoting(votingId)
+            .call();
+  
+          return {
+            ...voting,
+            id: votingId,
+            qntCandidates: candidates.length,
+          };
+        })
+      );
+  
+      return res.json(JSON.parse(
+        JSON.stringify(votingsWithCounts, (key, value) =>
+          typeof value === "bigint" ? value.toString() : value
+        )
+      )
+    );
+    } catch (error) {
+      console.error("Erro ao buscar votações com candidatos:", error.message);
+      return res.status(500).json({ error: "Erro ao buscar votações com candidatos" });
+    }
+  },
+
   getWinner: async (req, res) => {
     try {
       const { smartContract } = initContract();
