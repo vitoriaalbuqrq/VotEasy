@@ -1,32 +1,34 @@
 import { Container } from "@/components/container";
-import Image from "next/image";
-import Link from "next/link";
-import { Card } from "./components/card";
-import { Progress } from "@/components/ui/progress";
+import VotingSection from "./VotingSection";
+import api from "@/lib/axios/config";
+import { PublicCandidate, Voting } from "@/types/voting";
 
-export default function Voting() {
+interface VotingPageProps {
+  params: { id: string };
+}
+
+export default async function VotingPage({ params }: VotingPageProps) {
+  const votingId = params.id;
+
+  const votingRes = await api.get(`voting/${votingId}`);
+  const voting: Voting = votingRes.data;
+
+  const candidateRes = await api.get(`/candidates/${votingId}`);
+  const candidates: PublicCandidate[] = candidateRes.data;
+
   return (
     <Container>
-      <main className="bg-white w-[85%] m-auto shadow-md rounded-lg">
-        <div className="flex flex-col justify-center items-center py-12 px-10">
+      <main className="bg-white m-auto shadow-md rounded-lg sm:max-w-[95%]">
+        <div className="flex flex-col justify-center items-center p-3 sm:py-12 sm:px-10">
           <header className="mb-14 text-center px-5">
-            <h1 className="font-bold text-3xl text-start text-secondary">Eleições para presidente acadêmico: Quem você quer que ganhe?</h1>
-            <p className="text-start text-gray-500 mt-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo officia debitis delectus? Placeat cupiditate in nulla ut, eius numquam?</p>
+            <h1 className="font-bold text-2xl sm:text-3xl text-secondary">
+              {voting.name}: Quem você quer que ganhe?
+            </h1>
+            <p className="text-gray-500 mt-3">{voting.description}</p>
           </header>
-          <section className="flex justify-center gap-3 flex-wrap my-8">
-            <Card
-              candidateName="Vitória Albuquerque"
-              number={1052}
-              id="1"
-            />
-            <Card
-              candidateName="Luciano Soares"
-              number={5687}
-              id="2"
-            />
-          </section>
+          <VotingSection votingId={votingId} candidates={candidates} />
         </div>
       </main>
     </Container>
-  )
+  );
 }

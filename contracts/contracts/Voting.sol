@@ -26,7 +26,7 @@ contract Voteasy {
         Status status;
         uint winnerIndex;
     }
-
+ 
     uint public votingCount;
     mapping(uint => Voting) public votings;
     mapping(uint => Candidate[]) public candidates;

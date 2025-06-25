@@ -1,8 +1,8 @@
 export enum Status {
-  Active = '0',
-  Scheduled = '1',
-  Finalized = '2',
-  Canceled = '3'
+  Active = "0",
+  Scheduled = "1",
+  Finalized = "2",
+  Canceled = "3",
 }
 
 export function getStatusLabel(status: Status): string {
@@ -29,4 +29,19 @@ export interface Voting {
   endDate: string;
   winnerIndex: string;
   qntCandidates: number;
+}
+
+export interface Candidate {
+  id: string;
+  name: string;
+  number: string | number;
+  party: string;
+  votes: number;
+}
+
+export interface PublicCandidate {
+  id: string;
+  name: string;
+  number: string | number;
+  party: string;
 }
