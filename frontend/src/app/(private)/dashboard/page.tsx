@@ -5,7 +5,7 @@ import { FaCheckCircle, FaClock, FaTimesCircle, FaVoteYea } from "react-icons/fa
 import { VoteItem } from "./voting/components/voteItem";
 import { StatusCard } from "./voting/components/statusCard";
 import api from "@/lib/axios/config";
-import { Status, Voting } from "@/types/voting";
+import { STATUS, Voting } from "@/types/voting";
 import { formatTimestamp } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { SearchInput } from "@/app/(public)/votings/components/searchInput";
@@ -24,19 +24,19 @@ export default function Dashboard() {
   const handleCancel = async (id: Voting['id']) => {
     await api.post('update-status', {
       votingId: id,
-      newStatus: Status.Canceled,
+      newStatus: STATUS.canceled,
     });
 
-    setVotings(prev => prev.map(v => v.id === id ? { ...v, status: Status.Canceled } : v
+    setVotings(prev => prev.map(v => v.id === id ? { ...v, status: STATUS.canceled } : v
     )
     );
   }
 
   const statusCounts = {
-    active: votings.filter(v => v.status === Status.Active).length,
-    scheduled: votings.filter(v => v.status === Status.Scheduled).length,
-    finalized: votings.filter(v => v.status === Status.Finalized).length,
-    canceled: votings.filter(v => v.status === Status.Canceled).length,
+    active: votings.filter(v => v.status === STATUS.active).length,
+    scheduled: votings.filter(v => v.status === STATUS.scheduled).length,
+    finalized: votings.filter(v => v.status === STATUS.finalized).length,
+    canceled: votings.filter(v => v.status === STATUS.canceled).length,
   };
 
   return (
@@ -71,12 +71,7 @@ export default function Dashboard() {
         />
       </section>
       <section className="mt-10">
-        {votings.length === 0 && (
-          <div className="flex flex-col justify-center items-center">
-            <img src="/assets/images/empty-state.svg" alt="" className="w-[200px] drop-shadow" />
-            <p className="text-gray-400 font-semibold text-xl mt-3">Ainda não há votações registradas</p>
-          </div>
-        )}
+
         {/* TODO: implementar busca e filtros */}
         <div className="flex flex-col justify-start items-start rounded-t-lg px-3 py-5 bg-white sm:flex-row sm:items-center gap-4">
           <div className="w-full sm:w-1/2">
@@ -124,6 +119,12 @@ export default function Dashboard() {
             )}
           </tbody>
         </table>
+        {votings.length === 0 && (
+          <div className="flex flex-col justify-center items-center mt-5">
+            <img src="/assets/images/empty-state.svg" alt="" className="w-[200px] drop-shadow" />
+            <p className="text-gray-400 font-semibold text-xl mt-3">Ainda não há votações registradas</p>
+          </div>
+        )}
       </section>
     </main>
   )

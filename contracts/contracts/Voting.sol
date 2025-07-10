@@ -2,18 +2,11 @@
 pragma solidity ^0.8.28;
 
 contract Voteasy {
-    enum Status {
-        active,
-        scheduled,
-        finalized,
-        canceled
-    }
-
     struct Candidate {
         uint id;
         string name;
-        uint number; 
-        string party; 
+        uint number;
+        string party;
         uint votes;
     }
 
@@ -23,19 +16,20 @@ contract Voteasy {
         string description;
         uint startDate;
         uint endDate;
-        Status status;
         uint winnerIndex;
+        bool isCanceled;
     }
- 
+
     uint public votingCount;
     mapping(uint => Voting) public votings;
     mapping(uint => Candidate[]) public candidates;
     mapping(uint => mapping(address => bool)) public hasVoted;
 
-    event VotingCreated(uint indexed id, string name, uint startDate, uint endDate, Status status);
+    event VotingCreated(uint indexed id, string name, uint startDate, uint endDate);
     event CandidateAdded(uint indexed votingId, uint indexed candidateId, string name);
     event VoteCast(uint indexed votingId, uint indexed candidateId, address voter);
-    event VotingStatusUpdated(uint indexed votingId, Status newStatus);
+    event VotingCanceled(uint indexed votingId);
+    event VotingFinalized(uint indexed votingId, uint winnerIndex);
 
     modifier validDates(uint _startDate, uint _endDate) {
         require(_startDate > block.timestamp, "A data de inicio deve ser no futuro");
@@ -44,8 +38,9 @@ contract Voteasy {
     }
 
     modifier votingIsActive(uint _votingId) {
-        require(votings[_votingId].status == Status.active, "Esta votacao nao esta ativa");
-        require(votings[_votingId].status != Status.canceled, "A votacao foi cancelada");
+        Voting storage v = votings[_votingId];
+        require(!v.isCanceled, "Votacao cancelada");
+        require(block.timestamp >= v.startDate && block.timestamp <= v.endDate, "Fora do periodo de votacao");
         _;
     }
 
@@ -56,10 +51,9 @@ contract Voteasy {
         uint _endDate,
         string[] memory _candidateNames,
         uint[] memory _candidateNumbers,
-        string[] memory _candidateParties,
-        Status _status
+        string[] memory _candidateParties
     ) public validDates(_startDate, _endDate) {
-        require(_candidateNames.length > 1, "A votacao deve ter pelo menos dois candidato");
+        require(_candidateNames.length > 1, "A votacao deve ter pelo menos dois candidatos");
 
         uint votingId = votingCount++;
 
@@ -69,8 +63,8 @@ contract Voteasy {
             description: _description,
             startDate: _startDate,
             endDate: _endDate,
-            status: _status,
-            winnerIndex: type(uint).max // Inicialmente sem vencedor
+            winnerIndex: type(uint).max,
+            isCanceled: false
         });
 
         for (uint i = 0; i < _candidateNames.length; i++) {
@@ -81,28 +75,36 @@ contract Voteasy {
                 party: _candidateParties[i],
                 votes: 0
             }));
-
             emit CandidateAdded(votingId, i, _candidateNames[i]);
         }
 
-        emit VotingCreated(votingId, _name, _startDate, _endDate, _status);
+        emit VotingCreated(votingId, _name, _startDate, _endDate);
     }
 
-    function updateVotingStatus(uint _votingId, Status _newStatus) public {
-        require(votings[_votingId].status != Status.finalized, "Nao pode alterar uma votacao finalizada");
-        require(votings[_votingId].status != Status.canceled, "Nao pode alterar uma votacao cancelada");
+    function cancelVoting(uint _votingId) public {
+        require(!votings[_votingId].isCanceled, "Votacao ja cancelada");
+        votings[_votingId].isCanceled = true;
+        emit VotingCanceled(_votingId);
+    }
 
-        votings[_votingId].status = _newStatus;
+    function vote(uint _votingId, uint _candidateId) public votingIsActive(_votingId) {
+        require(!hasVoted[_votingId][msg.sender], "Voce ja votou nesta votacao!");
+        require(_candidateId < candidates[_votingId].length, "Candidato invalido");
 
-        if (_newStatus == Status.finalized) {
-            // Calcular o vencedor no momento da finalização
-            uint winnerIndex = _calculateWinner(_votingId);
-            votings[_votingId].winnerIndex = winnerIndex;
+        candidates[_votingId][_candidateId].votes++;
+        hasVoted[_votingId][msg.sender] = true;
 
-            emit VotingStatusUpdated(_votingId, _newStatus);
-        } else {
-            emit VotingStatusUpdated(_votingId, _newStatus);
-        }
+        emit VoteCast(_votingId, _candidateId, msg.sender);
+    }
+
+    function finalizeVoting(uint _votingId) public {
+        Voting storage v = votings[_votingId];
+        require(!v.isCanceled, "Votacao cancelada");
+        require(block.timestamp > v.endDate, "Votacao ainda em andamento");
+        require(v.winnerIndex == type(uint).max, "Votacao ja finalizada");
+
+        v.winnerIndex = _calculateWinner(_votingId);
+        emit VotingFinalized(_votingId, v.winnerIndex);
     }
 
     function _calculateWinner(uint _votingId) internal view returns (uint) {
@@ -119,76 +121,44 @@ contract Voteasy {
         return winnerIndex;
     }
 
-    function getWinner(uint _votingId) public view 
-        returns (uint id, string memory name, uint number, string memory party, uint votes) 
-    {
-        require(votings[_votingId].status == Status.finalized, "Votacao nao finalizada");
-        require(votings[_votingId].status != Status.canceled, "A votacao foi cancelada");
+    function getWinner(uint _votingId) public view returns (
+        uint id, string memory name, uint number, string memory party, uint votes
+    ) {
+        Voting storage v = votings[_votingId];
+        require(!v.isCanceled, "Votacao cancelada");
+        require(v.winnerIndex != type(uint).max, "Votacao nao finalizada");
 
-        uint winnerIndex = votings[_votingId].winnerIndex;
-        require(winnerIndex != type(uint).max, "Nenhum vencedor encontrado");
-
-        Candidate memory winner = candidates[_votingId][winnerIndex];
+        Candidate memory winner = candidates[_votingId][v.winnerIndex];
         return (winner.id, winner.name, winner.number, winner.party, winner.votes);
     }
 
-
-    function vote(uint _votingId, uint _candidateId) public votingIsActive(_votingId) {
-        require(!hasVoted[_votingId][msg.sender], "Voce ja votou nesta votacao!");
-        require(block.timestamp >= votings[_votingId].startDate && block.timestamp <= votings[_votingId].endDate,
-        "Votacao fora do periodo permitido");
-        require(_candidateId < candidates[_votingId].length, "Candidato invalido");
-
-        candidates[_votingId][_candidateId].votes++;
-        hasVoted[_votingId][msg.sender] = true;
-
-        emit VoteCast(_votingId, _candidateId, msg.sender);
-    }
-
-    function getCandidate(uint _candidateId, uint _votingId) public view 
-    returns (uint id, string memory name, uint number, string memory party, uint votes) {
-        Candidate memory candidate = candidates[_votingId][_candidateId];
-        return (candidate.id, candidate.name, candidate.number, candidate.party, candidate.votes);
-    }
-
-    function getCandidatesByVoting (uint _votingId) public view returns (Candidate[] memory){
-        Candidate[] memory candidateList = new Candidate[](candidates[_votingId].length); // Use o array da votação específica
-        for (uint i = 0; i < candidates[_votingId].length; i++) {
-            candidateList[i] = candidates[_votingId][i];
-        }
-        return candidateList;
-    }
-    
-    function getAllVotings() public view returns(Voting[] memory){
-        Voting[] memory votingList = new Voting[](votingCount);
-        for (uint i = 0; i < votingCount; i++) {
-            votingList[i] = votings[i];
-        }
-        return votingList;
-    }
-
-    function getVoting(uint _votingId) public view 
-    returns (
-        uint id,
-        string memory name,
-        string memory description,
-        uint startDate,
-        uint endDate,
-        Status status,
-        uint winnerIndex
+    function getCandidate(uint _candidateId, uint _votingId) public view returns (
+        uint id, string memory name, uint number, string memory party, uint votes
     ) {
-        require(_votingId < votingCount, "Votacao nao encontrada");
+        Candidate memory c = candidates[_votingId][_candidateId];
+        return (c.id, c.name, c.number, c.party, c.votes);
+    }
 
-        Voting storage voting = votings[_votingId];
+    function getCandidatesByVoting(uint _votingId) public view returns (Candidate[] memory) {
+        return candidates[_votingId];
+    }
 
+    function getAllVotings() public view returns (Voting[] memory) {
+        Voting[] memory list = new Voting[](votingCount);
+        for (uint i = 0; i < votingCount; i++) {
+            list[i] = votings[i];
+        }
+        return list;
+    }
+
+    function getVoting(uint _votingId) public view returns (
+        uint id, string memory name, string memory description,
+        uint startDate, uint endDate, uint winnerIndex, bool isCanceled
+    ) {
+        Voting storage v = votings[_votingId];
         return (
-            voting.id,
-            voting.name,
-            voting.description,
-            voting.startDate,
-            voting.endDate,
-            voting.status,
-            voting.winnerIndex
+            v.id, v.name, v.description,
+            v.startDate, v.endDate, v.winnerIndex, v.isCanceled
         );
     }
 }

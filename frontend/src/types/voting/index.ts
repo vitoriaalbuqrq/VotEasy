@@ -1,3 +1,19 @@
+export const STATUS = {
+  scheduled: "scheduled",
+  active: "active",
+  finalized: "finalized",
+  canceled: "canceled",
+} as const;
+
+export type VotingStatus = keyof typeof STATUS;
+
+export const StatusLabels: Record<VotingStatus, string> = {
+  scheduled: "Programada",
+  active: "Ativa",
+  finalized: "Finalizada",
+  canceled: "Cancelada",
+};
+
 export enum Status {
   Active = "0",
   Scheduled = "1",
@@ -24,7 +40,7 @@ export interface Voting {
   id: string;
   name: string;
   description: string;
-  status: Status;
+  status: VotingStatus;
   startDate: string;
   endDate: string;
   winnerIndex: string;

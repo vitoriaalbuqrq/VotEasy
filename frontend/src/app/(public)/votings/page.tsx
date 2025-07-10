@@ -1,7 +1,7 @@
 import { SearchInput } from "./components/searchInput";
 import { VotingCard } from "./components/card";
 import api from "@/lib/axios/config";
-import { Status, Voting } from "@/types/voting";
+import { STATUS, Voting } from "@/types/voting";
 import { formatTimestamp } from "@/utils/format";
 
 export default async function Votings() {
@@ -10,10 +10,10 @@ export default async function Votings() {
   const votings: Voting[] = res.data;
 
   // Filtro para votações ativas
-  const activeVotings = votings.filter(voting => voting.status === Status.Active);
+  const activeVotings = votings.filter(voting => voting.status === STATUS.active);
 
   // Filtro para votações programadas
-  const scheduledVotings = votings.filter(voting => voting.status === Status.Scheduled);
+  const scheduledVotings = votings.filter(voting => voting.status === STATUS.scheduled);
 
   return (
     <main className="bg-gray-100 flex flex-col items-start justify-start min-h-[100vh]">

@@ -2,7 +2,7 @@
 import { LinkButton } from "@/components/linkButton";
 import Link from "next/link";
 import { VoteStatus } from "../voteStatus";
-import { Status, Voting } from "@/types/voting";
+import { STATUS, Voting } from "@/types/voting";
 
 type VotingProps = Pick<Voting, 'id' | 'name' | 'status' | 'startDate' | 'endDate' | 'qntCandidates'> & {
   onCancel: (id: Voting['id']) => void;
@@ -33,14 +33,14 @@ export function VoteItem({ id, name, status, startDate, endDate, qntCandidates, 
 
             <button
               onClick={() => onCancel(id)}
-              disabled={status === Status.Canceled}
+              disabled={status === STATUS.canceled}
               className={`font-medium rounded-full px-3 py-1 mr-2 whitespace-nowrap border
-                ${status === Status.Canceled
+                ${status === STATUS.canceled
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-white text-gray-700 border-gray-700 hover:border-red-200 hover:text-red-800 hover:bg-red-200'}
               `}
             >
-              {status === Status.Canceled ? 'Cancelado' : 'Cancelar'}
+              {status === STATUS.canceled ? 'Cancelado' : 'Cancelar'}
             </button>
 
             <Link href={`/dashboard/voting/${id}`} className="bg-secondary text-white font-medium rounded-full px-3 py-1 mr-2 hover:opacity-90 whitespace-nowrap">

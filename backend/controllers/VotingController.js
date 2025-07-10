@@ -44,20 +44,38 @@ async function sendTransaction(tx, signer, network, res) {
           typeof value === "bigint" ? value.toString() : value
         )
       ),
-      msg: "Transação confirmada!"
+      msg: "Transação confirmada!",
     });
   } catch (error) {
     console.error("Erro na transação:", error);
-    return res.status(500).json({ error: error.message })
+    return res.status(500).json({ error: error.message });
   }
+}
+
+function getVotingStatus(voting) {
+  const now = Math.floor(Date.now() / 1000);
+
+  if (voting.isCanceled) return "canceled";
+  if (now < Number(voting.startDate)) return "scheduled";
+  if (now >= Number(voting.startDate) && now <= Number(voting.endDate))
+    return "active";
+  if (now > Number(voting.endDate)) return "finalized";
+
+  return "unknown";
 }
 
 const votingController = {
   create: async (req, res) => {
     try {
       const { network, smartContract, signer } = initContract();
-      const startTimestamp = parseDateTimeToTimestamp(req.body.startDate, req.body.startTime);
-      const endTimestamp = parseDateTimeToTimestamp(req.body.endDate, req.body.endTime);
+      const startTimestamp = parseDateTimeToTimestamp(
+        req.body.startDate,
+        req.body.startTime
+      );
+      const endTimestamp = parseDateTimeToTimestamp(
+        req.body.endDate,
+        req.body.endTime
+      );
 
       const tx = smartContract.methods.createVoting(
         req.body.name,
@@ -91,19 +109,23 @@ const votingController = {
       return res.status(500).json({ error: "Erro ao votar" });
     }
   },
-  
+
   getCandidate: async (req, res) => {
     try {
       const { smartContract } = initContract();
       const { votingId, candidateId } = req.params;
       //console.log(votingId, candidateId);
-      const candidate = await smartContract.methods.getCandidate(candidateId, votingId).call();
-      console.log(candidate)
-      return res.json(JSON.parse(
-        JSON.stringify(candidate, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
+      const candidate = await smartContract.methods
+        .getCandidate(candidateId, votingId)
+        .call();
+      console.log(candidate);
+      return res.json(
+        JSON.parse(
+          JSON.stringify(candidate, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
         )
-      ));
+      );
     } catch (error) {
       console.error("Erro ao buscar candidato:", error.message);
       return res.status(500).json({ error: "Erro ao buscar candidato" });
@@ -113,12 +135,16 @@ const votingController = {
     try {
       const { smartContract } = initContract();
       const votingId = req.params.votingId;
-      const candidates = await smartContract.methods.getCandidatesByVoting(votingId).call();
-      return res.json(JSON.parse(
-        JSON.stringify(candidates, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
+      const candidates = await smartContract.methods
+        .getCandidatesByVoting(votingId)
+        .call();
+      return res.json(
+        JSON.parse(
+          JSON.stringify(candidates, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
         )
-      ));
+      );
     } catch (error) {
       console.error("Erro ao buscar candidatos:", error.message);
     }
@@ -129,11 +155,20 @@ const votingController = {
       const { smartContract } = initContract();
       const votingId = req.params.id;
       const voting = await smartContract.methods.getVoting(votingId).call();
-      return res.json(JSON.parse(
-        JSON.stringify(voting, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
+
+      const votingWithStatus = {
+        ...voting,
+        id: votingId,
+        status: getVotingStatus(voting),
+      };
+
+      return res.json(
+        JSON.parse(
+          JSON.stringify(votingWithStatus, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
         )
-      ));
+      );
     } catch (error) {
       console.error("Erro ao buscar votação:", error.message);
     }
@@ -143,11 +178,20 @@ const votingController = {
     try {
       const { smartContract } = initContract();
       const votings = await smartContract.methods.getAllVotings().call();
-      return res.json(JSON.parse(
-        JSON.stringify(votings, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
+
+      const votingsWithStatus = votings.map((voting, index) => ({
+        ...voting,
+        id: voting.id ?? index.toString(),
+        status: getVotingStatus(voting),
+      }));
+
+      return res.json(
+        JSON.parse(
+          JSON.stringify(votingsWithStatus, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
         )
-      ));
+      );
     } catch (error) {
       console.error("Erro ao buscar votações:", error.message);
     }
@@ -157,32 +201,35 @@ const votingController = {
     try {
       const { smartContract } = initContract();
       const votings = await smartContract.methods.getAllVotings().call();
-  
+
       const votingsWithCounts = await Promise.all(
         votings.map(async (voting, index) => {
           const votingId = voting.id ?? index.toString();
-  
           const candidates = await smartContract.methods
             .getCandidatesByVoting(votingId)
             .call();
-  
+
           return {
             ...voting,
             id: votingId,
             qntCandidates: candidates.length,
+            status: getVotingStatus(voting),
           };
         })
       );
-  
-      return res.json(JSON.parse(
-        JSON.stringify(votingsWithCounts, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
+
+      return res.json(
+        JSON.parse(
+          JSON.stringify(votingsWithCounts, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
         )
-      )
-    );
+      );
     } catch (error) {
       console.error("Erro ao buscar votações com candidatos:", error.message);
-      return res.status(500).json({ error: "Erro ao buscar votações com candidatos" });
+      return res
+        .status(500)
+        .json({ error: "Erro ao buscar votações com candidatos" });
     }
   },
 
@@ -191,16 +238,18 @@ const votingController = {
       const { smartContract } = initContract();
       const votingId = req.params.votingId;
       const voting = await smartContract.methods.getWinner(votingId).call();
-      return res.json(JSON.parse(
-        JSON.stringify(voting, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
+      return res.json(
+        JSON.parse(
+          JSON.stringify(voting, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
         )
-      ));
+      );
     } catch (error) {
       console.error("Erro ao buscar ganhador:", error.message);
     }
   },
-  
+
   updateVotingStatus: async (req, res) => {
     try {
       const { network, signer, smartContract } = initContract();
@@ -208,18 +257,18 @@ const votingController = {
 
       const voting = await smartContract.methods.getVoting(votingId).call();
       if (!voting) {
-        return res.status(404).json({error: "Votação não encontrado!"})
+        return res.status(404).json({ error: "Votação não encontrado!" });
       }
 
       const tx = smartContract.methods.updateVotingStatus(votingId, newStatus);
       return await sendTransaction(tx, signer, network, res);
-
     } catch (error) {
       console.error("Erro ao atualizar status:", error.message);
-      return res.status(500).json({ error: "Erro ao atualizar status da votação" });
+      return res
+        .status(500)
+        .json({ error: "Erro ao atualizar status da votação" });
     }
-  }
-
+  },
 };
 
 module.exports = votingController;

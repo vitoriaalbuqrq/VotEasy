@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0xfDb1F953b6A0CaB3995D610cc00146C49C794758";
+const CONTRACT_ADDRESS = "0x1173BD553cF065c317adf9d368136850Db7871EC";
 
 const CONTRACT_ABI = [
     {
@@ -57,6 +57,19 @@ const CONTRACT_ABI = [
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "votingId",
+          "type": "uint256"
+        }
+      ],
+      "name": "VotingCanceled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "id",
           "type": "uint256"
         },
@@ -77,12 +90,6 @@ const CONTRACT_ABI = [
           "internalType": "uint256",
           "name": "endDate",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "enum Voteasy.Status",
-          "name": "status",
-          "type": "uint8"
         }
       ],
       "name": "VotingCreated",
@@ -99,13 +106,26 @@ const CONTRACT_ABI = [
         },
         {
           "indexed": false,
-          "internalType": "enum Voteasy.Status",
-          "name": "newStatus",
-          "type": "uint8"
+          "internalType": "uint256",
+          "name": "winnerIndex",
+          "type": "uint256"
         }
       ],
-      "name": "VotingStatusUpdated",
+      "name": "VotingFinalized",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_votingId",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelVoting",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [
@@ -187,14 +207,22 @@ const CONTRACT_ABI = [
           "internalType": "string[]",
           "name": "_candidateParties",
           "type": "string[]"
-        },
-        {
-          "internalType": "enum Voteasy.Status",
-          "name": "_status",
-          "type": "uint8"
         }
       ],
       "name": "createVoting",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_votingId",
+          "type": "uint256"
+        }
+      ],
+      "name": "finalizeVoting",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -231,14 +259,14 @@ const CONTRACT_ABI = [
               "type": "uint256"
             },
             {
-              "internalType": "enum Voteasy.Status",
-              "name": "status",
-              "type": "uint8"
-            },
-            {
               "internalType": "uint256",
               "name": "winnerIndex",
               "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isCanceled",
+              "type": "bool"
             }
           ],
           "internalType": "struct Voteasy.Voting[]",
@@ -375,14 +403,14 @@ const CONTRACT_ABI = [
           "type": "uint256"
         },
         {
-          "internalType": "enum Voteasy.Status",
-          "name": "status",
-          "type": "uint8"
-        },
-        {
           "internalType": "uint256",
           "name": "winnerIndex",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isCanceled",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -459,24 +487,6 @@ const CONTRACT_ABI = [
           "type": "uint256"
         },
         {
-          "internalType": "enum Voteasy.Status",
-          "name": "_newStatus",
-          "type": "uint8"
-        }
-      ],
-      "name": "updateVotingStatus",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_votingId",
-          "type": "uint256"
-        },
-        {
           "internalType": "uint256",
           "name": "_candidateId",
           "type": "uint256"
@@ -536,20 +546,19 @@ const CONTRACT_ABI = [
           "type": "uint256"
         },
         {
-          "internalType": "enum Voteasy.Status",
-          "name": "status",
-          "type": "uint8"
-        },
-        {
           "internalType": "uint256",
           "name": "winnerIndex",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isCanceled",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
       "type": "function"
     }
-
-];
+  ];
 
 module.exports = { CONTRACT_ABI, CONTRACT_ADDRESS };

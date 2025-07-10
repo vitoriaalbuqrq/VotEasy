@@ -6,7 +6,6 @@ import Step2 from "./step-2";
 import Step3 from "./step-3";
 import buildMultiStepForm from "@/lib/multi-step-form";
 import api from "@/lib/axios/config";
-import { getVotingStatus } from "@/utils/status";
 
 //1 - Define all the fields for the entire form
 export const VotingFormSchema = z.object({
@@ -51,16 +50,6 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
     const candidateNumbers = candidates.map(c => c.number ?? 0);
     const candidateParties = candidates.map(() => "");
     
-    //Date based status
-    const statusMap = {
-      scheduled: 0,
-      active: 1,
-      finalized: 2,
-    };
-
-    const statusString = getVotingStatus(values.startDate, values.startTime, values.endDate, values.endTime);
-    const status = statusMap[statusString];
-    
     //TODO: Verificar as datas e conversões
     const payload = {
       ...rest,
@@ -69,13 +58,12 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
       candidateNames,
       candidateNumbers,
       candidateParties,
-      status,
     };
     
     console.log(payload)
     await api.post("voting", payload);
 
-    console.log(payload)
+    console.log("Votação criada com sucesso.", payload)
     
   } catch (error){
     console.error("Erro ao criar votação:", error);
