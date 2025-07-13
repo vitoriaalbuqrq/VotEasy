@@ -14,6 +14,7 @@ export const StatusLabels: Record<VotingStatus, string> = {
   canceled: "Cancelada",
 };
 
+//TODO: Apagar os tipos que não serão mais utilizados
 export enum Status {
   Active = "0",
   Scheduled = "1",

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const Web3 = require("web3").default;
+const web3 = new Web3();
 
 const CONTRACT_ABI = require("../config/contract/config");
 const CONTRACT_ADDRESS = require("../config/contract/config");
@@ -98,9 +99,21 @@ const votingController = {
     try {
       const { network, signer, smartContract } = initContract();
 
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({msg: "Usuário não autenticado"})
+      }
+
+      console.log("USER.ID: ", userId)
+
+      //Hash unico do usuario
+      const userIdHash = web3.utils.keccak256(userId.toString());
+
       const tx = smartContract.methods.vote(
         req.body.votingId,
-        req.body.candidateId
+        req.body.candidateId,
+        userIdHash
       );
 
       return await sendTransaction(tx, signer, network, res);
@@ -250,23 +263,23 @@ const votingController = {
     }
   },
 
-  updateVotingStatus: async (req, res) => {
+  cancelVoting: async (req, res) => {
     try {
       const { network, signer, smartContract } = initContract();
-      const { votingId, newStatus } = req.body;
+      const { votingId } = req.body;
 
       const voting = await smartContract.methods.getVoting(votingId).call();
       if (!voting) {
         return res.status(404).json({ error: "Votação não encontrado!" });
       }
 
-      const tx = smartContract.methods.updateVotingStatus(votingId, newStatus);
+      const tx = smartContract.methods.cancelVoting(votingId);
       return await sendTransaction(tx, signer, network, res);
     } catch (error) {
-      console.error("Erro ao atualizar status:", error.message);
+      console.error("Erro ao cancelar votação:", error.message);
       return res
         .status(500)
-        .json({ error: "Erro ao atualizar status da votação" });
+        .json({ error: "Erro ao cancelar votação" });
     }
   },
 };

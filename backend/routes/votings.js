@@ -9,7 +9,7 @@ router.route("/voting", checkToken, checkRole("ORGANIZER"))
 router.route("/vote", checkToken)
   .post((req, res) => votingController.vote(req, res));
 
-router.route("/update-status", checkToken, checkRole("ORGANIZER"))
+router.route("/cancel-voting", checkToken, checkRole("ORGANIZER"))
   .post((req, res) => votingController.updateVotingStatus(req, res));
 
 router.route("/candidate/:candidateId/:votingId")

@@ -14,6 +14,7 @@ import { SearchInput } from "@/app/(public)/votings/components/searchInput";
 export default function Dashboard() {
 
   const [votings, setVotings] = useState<Voting[]>([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     api.get('votings/with-candidates')
@@ -22,9 +23,8 @@ export default function Dashboard() {
   }, []);
 
   const handleCancel = async (id: Voting['id']) => {
-    await api.post('update-status', {
+    await api.post('cancel-voting', {
       votingId: id,
-      newStatus: STATUS.canceled,
     });
 
     setVotings(prev => prev.map(v => v.id === id ? { ...v, status: STATUS.canceled } : v
@@ -38,6 +38,10 @@ export default function Dashboard() {
     finalized: votings.filter(v => v.status === STATUS.finalized).length,
     canceled: votings.filter(v => v.status === STATUS.canceled).length,
   };
+
+  const filtered = votings.filter((v) =>
+    v.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <main>
@@ -75,7 +79,7 @@ export default function Dashboard() {
         {/* TODO: implementar busca e filtros */}
         <div className="flex flex-col justify-start items-start rounded-t-lg px-3 py-5 bg-white sm:flex-row sm:items-center gap-4">
           <div className="w-full sm:w-1/2">
-            <SearchInput />
+            <SearchInput value={search} onChange={setSearch} />
           </div>
 
           <select className="border border-gray-300 rounded-full px-3 py-2 sm:ms-auto">
@@ -105,17 +109,25 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {votings.map(voting =>
-              <VoteItem
-                key={voting.id}
-                id={voting.id}
-                name={voting.name}
-                status={voting.status}
-                startDate={formatTimestamp(voting.startDate)}
-                endDate={formatTimestamp(voting.endDate)}
-                qntCandidates={voting.qntCandidates}
-                onCancel={handleCancel}
-              />
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-start text-gray-500 py-6">
+                  Nenhuma votação encontrada.
+                </td>
+              </tr>
+            ) : (
+              filtered.map(voting =>
+                <VoteItem
+                  key={voting.id}
+                  id={voting.id}
+                  name={voting.name}
+                  status={voting.status}
+                  startDate={formatTimestamp(voting.startDate)}
+                  endDate={formatTimestamp(voting.endDate)}
+                  qntCandidates={voting.qntCandidates}
+                  onCancel={handleCancel}
+                />
+              )
             )}
           </tbody>
         </table>

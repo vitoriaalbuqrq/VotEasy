@@ -23,7 +23,7 @@ contract Voteasy {
     uint public votingCount;
     mapping(uint => Voting) public votings;
     mapping(uint => Candidate[]) public candidates;
-    mapping(uint => mapping(address => bool)) public hasVoted;
+    mapping(uint => mapping(bytes32 => bool)) public hasVotedByUser;
 
     event VotingCreated(uint indexed id, string name, uint startDate, uint endDate);
     event CandidateAdded(uint indexed votingId, uint indexed candidateId, string name);
@@ -87,12 +87,12 @@ contract Voteasy {
         emit VotingCanceled(_votingId);
     }
 
-    function vote(uint _votingId, uint _candidateId) public votingIsActive(_votingId) {
-        require(!hasVoted[_votingId][msg.sender], "Voce ja votou nesta votacao!");
+    function vote(uint _votingId, uint _candidateId, bytes32 userIdHash) public votingIsActive(_votingId) {
+        require(!hasVotedByUser[_votingId][userIdHash], "Voce ja votou nesta votacao!");
         require(_candidateId < candidates[_votingId].length, "Candidato invalido");
 
         candidates[_votingId][_candidateId].votes++;
-        hasVoted[_votingId][msg.sender] = true;
+        hasVotedByUser[_votingId][userIdHash] = true;
 
         emit VoteCast(_votingId, _candidateId, msg.sender);
     }

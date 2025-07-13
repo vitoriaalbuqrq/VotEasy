@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0x1173BD553cF065c317adf9d368136850Db7871EC";
+const CONTRACT_ADDRESS = "0x7Ed8737F575Db87F645394C5Ab494Cc723c380AF";
 
 const CONTRACT_ABI = [
     {
@@ -463,12 +463,12 @@ const CONTRACT_ABI = [
           "type": "uint256"
         },
         {
-          "internalType": "address",
+          "internalType": "bytes32",
           "name": "",
-          "type": "address"
+          "type": "bytes32"
         }
       ],
-      "name": "hasVoted",
+      "name": "hasVotedByUser",
       "outputs": [
         {
           "internalType": "bool",
@@ -490,6 +490,11 @@ const CONTRACT_ABI = [
           "internalType": "uint256",
           "name": "_candidateId",
           "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "userIdHash",
+          "type": "bytes32"
         }
       ],
       "name": "vote",
@@ -559,6 +564,6 @@ const CONTRACT_ABI = [
       "stateMutability": "view",
       "type": "function"
     }
-  ];
+  ]
 
 module.exports = { CONTRACT_ABI, CONTRACT_ADDRESS };
