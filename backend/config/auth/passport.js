@@ -36,7 +36,7 @@ passport.use(
         }
 
         const token = jwt.sign(
-          { id: user._id, role: user.role }, 
+          { id: user.id, role: user.role }, 
           process.env.SECRET, {
           expiresIn: "1h",
         });

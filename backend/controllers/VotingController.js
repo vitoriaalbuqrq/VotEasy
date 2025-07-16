@@ -98,8 +98,11 @@ const votingController = {
   vote: async (req, res) => {
     try {
       const { network, signer, smartContract } = initContract();
+      console.log("BODY:", req.body);
+      console.log("USER:", req.user);
 
       const userId = req.user?.id;
+      console.log("userid vote controller", userId)
 
       if (!userId) {
         return res.status(401).json({msg: "Usuário não autenticado"})

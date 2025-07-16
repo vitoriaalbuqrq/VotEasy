@@ -13,9 +13,9 @@ export default function VotingSection({ votingId, candidates }: VotingSectionPro
   const handleVote = async (candidateId: string) => {
     try {
       await api.post("/vote", { votingId, candidateId });
-      alert("Voto computado com sucesso!");
+      console.log("Voto computado com sucesso!");
     } catch (error) {
-      alert("Erro ao computar voto.");
+      console.log("Erro ao computar voto.");
     }
   };
 

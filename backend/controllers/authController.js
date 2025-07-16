@@ -122,7 +122,7 @@ const authController = {
         msg: "Autenticação realizada com sucesso",
         token,
         user: {
-          id: user.id,
+          id: user._id,
           name: user.name,
           role: user.role,
         }
@@ -152,7 +152,7 @@ const authController = {
         validation_id: "",
       },
       where: {
-        id: user.id,
+        id: user._id,
       },
     });
     return res.redirect("http://localhost:3000/auth/organizer/login?emailConfirmed=true");

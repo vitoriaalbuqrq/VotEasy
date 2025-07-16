@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [votings, setVotings] = useState<Voting[]>([]);
   const [search, setSearch] = useState("");
 
+  //TODO: Adicionar loading durante o cancelamento
   useEffect(() => {
     api.get('votings/with-candidates')
       .then(res => setVotings(res.data))

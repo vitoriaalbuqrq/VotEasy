@@ -9,7 +9,7 @@ export default function Home() {
         <article className="flex flex-col items-start justify-center gap-4 relative z-20">
           <h1 className="text-3xl lg:text-5xl font-bold pe-10">Sistema de <span className="text-primary">Votação</span> Online com Blockchain</h1>
           <p className="text-xl mt-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Hic nobis, consequatur tenetur voluptatem distinctio error id nulla modi.</p>
-          <Link href="" className="px-5 py-2 text-primary bg-primary-hover rounded-full border border-primary font-semibold text-lg transition-transform duration-300 hover:scale-105 hover:opacity-80">
+          <Link href="auth" className="px-5 py-2 text-primary bg-primary-hover rounded-full border border-primary font-semibold text-lg transition-transform duration-300 hover:scale-105 hover:opacity-80">
             Comece agora
           </Link>
         </article>
