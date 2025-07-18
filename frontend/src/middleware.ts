@@ -3,8 +3,11 @@ import { NextResponse, type MiddlewareConfig, type NextRequest } from "next/serv
 const publicRoutes = [
   { path: "/auth/organizer/login", whenAuthenticated: "redirect" },
   { path: "/auth/organizer/register", whenAuthenticated: "redirect" },
+  { path: "/auth/user/login", whenAuthenticated: "redirect" },
+  { path: "/auth/user/register", whenAuthenticated: "redirect" },
   { path: "/votings", whenAuthenticated: "next" },
   { path: "/auth", whenAuthenticated: "next" },
+  { path: "/auth/", whenAuthenticated: "next" },
   { path: "/auth/callback", whenAuthenticated: "next" },
   { path: "/", whenAuthenticated: "next" },
 ] as const;

@@ -15,16 +15,25 @@ passport.use(
     },
     async (req, accessToken, refreshToken, profile, done) => {
       //TODO: Resolver atribuição de role
-      const rawRole = req.query.state === 'ORGANIZER' ? 'ORGANIZER' : 'USER';
+      const validRoles = ['USER', 'ORGANIZER'];
+      const rawRole = typeof req.query.state === 'string' && validRoles.includes(req.query.state)
+        ? req.query.state
+        : 'USER';
+
       const role = Role[rawRole];
-      console.log("Callback com role:", role);
 
       try {
+  
         let user = await prisma.user.findUnique({
           where: { email: profile.emails[0].value },
         });
 
-        if (!user) {
+        if (user) {
+          if (user.role !== role) {
+            // Impede login com role diferente da original
+            return done(new Error(`Este e-mail já está registrado como ${user.role}. Use a opção correta de login.`), null);
+          }
+        } else {
           user = await prisma.user.create({
             data: {
               name: profile.displayName,

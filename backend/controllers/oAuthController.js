@@ -1,7 +1,13 @@
 const passport = require("passport");
 
 const oauthController = {
-  googleAuth: passport.authenticate("google", { scope: ["profile", "email"] }),
+  googleAuth: (req, res, next) => {
+    const state = req.query.state || 'USER';
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      state: state
+    })(req, res, next);
+  },
 
   googleCallback: passport.authenticate("google", { failureRedirect: "/" }),
 

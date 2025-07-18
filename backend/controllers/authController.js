@@ -103,7 +103,7 @@ const authController = {
 
       const token = jwt.sign(
         {
-          id: user._id,
+          id: user.id,
           role: user.role,
         },
         secret,
@@ -122,7 +122,7 @@ const authController = {
         msg: "Autenticação realizada com sucesso",
         token,
         user: {
-          id: user._id,
+          id: user.id,
           name: user.name,
           role: user.role,
         }
@@ -152,7 +152,7 @@ const authController = {
         validation_id: "",
       },
       where: {
-        id: user._id,
+        id: user.id,
       },
     });
     return res.redirect("http://localhost:3000/auth/organizer/login?emailConfirmed=true");

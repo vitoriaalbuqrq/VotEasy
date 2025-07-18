@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { SearchInput } from "@/app/(public)/votings/components/searchInput";
 
 //TODO: Adiconar loading enquanto atualiza status apos cancelar
+//TODO: Mostrar apenas votações referente ao usuario
 export default function Dashboard() {
 
   const [votings, setVotings] = useState<Voting[]>([]);
