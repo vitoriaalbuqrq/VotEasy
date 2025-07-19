@@ -18,16 +18,18 @@ contract Voteasy {
         uint endDate;
         uint winnerIndex;
         bool isCanceled;
+        bytes32 creatorId;
     }
 
     uint public votingCount;
+    
     mapping(uint => Voting) public votings;
     mapping(uint => Candidate[]) public candidates;
     mapping(uint => mapping(bytes32 => bool)) public hasVotedByUser;
 
     event VotingCreated(uint indexed id, string name, uint startDate, uint endDate);
     event CandidateAdded(uint indexed votingId, uint indexed candidateId, string name);
-    event VoteCast(uint indexed votingId, uint indexed candidateId, address voter);
+    event Voted(uint votingId, uint candidateId);
     event VotingCanceled(uint indexed votingId);
     event VotingFinalized(uint indexed votingId, uint winnerIndex);
 
@@ -51,7 +53,8 @@ contract Voteasy {
         uint _endDate,
         string[] memory _candidateNames,
         uint[] memory _candidateNumbers,
-        string[] memory _candidateParties
+        string[] memory _candidateParties,
+        bytes32 _creatorId
     ) public validDates(_startDate, _endDate) {
         require(_candidateNames.length > 1, "A votacao deve ter pelo menos dois candidatos");
 
@@ -64,7 +67,8 @@ contract Voteasy {
             startDate: _startDate,
             endDate: _endDate,
             winnerIndex: type(uint).max,
-            isCanceled: false
+            isCanceled: false,
+            creatorId: _creatorId
         });
 
         for (uint i = 0; i < _candidateNames.length; i++) {
@@ -81,9 +85,13 @@ contract Voteasy {
         emit VotingCreated(votingId, _name, _startDate, _endDate);
     }
 
-    function cancelVoting(uint _votingId) public {
-        require(!votings[_votingId].isCanceled, "Votacao ja cancelada");
-        votings[_votingId].isCanceled = true;
+    function cancelVoting(uint _votingId, bytes32 userIdHash) public {
+        Voting storage v = votings[_votingId];
+        require(!v.isCanceled, "Votacao ja cancelada");
+        require(v.creatorId == userIdHash, "Apenas o criador pode cancelar");
+
+        v.isCanceled = true;
+
         emit VotingCanceled(_votingId);
     }
 
@@ -91,12 +99,14 @@ contract Voteasy {
         require(!hasVotedByUser[_votingId][userIdHash], "Voce ja votou nesta votacao!");
         require(_candidateId < candidates[_votingId].length, "Candidato invalido");
 
-        candidates[_votingId][_candidateId].votes++;
+        Candidate storage c = candidates[_votingId][_candidateId];
+        c.votes++;
         hasVotedByUser[_votingId][userIdHash] = true;
 
-        emit VoteCast(_votingId, _candidateId, msg.sender);
+        emit Voted(_votingId, _candidateId);
     }
 
+    //TODO: Alterar e corrigir para calcular o vencedor corretamente
     function finalizeVoting(uint _votingId) public {
         Voting storage v = votings[_votingId];
         require(!v.isCanceled, "Votacao cancelada");

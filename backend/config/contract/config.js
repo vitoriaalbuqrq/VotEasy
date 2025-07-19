@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0x7Ed8737F575Db87F645394C5Ab494Cc723c380AF";
+const CONTRACT_ADDRESS = "0x03998788d128F6D149b369ad0D4B21FeC5D1DE07";
 
 const CONTRACT_ABI = [
     {
@@ -30,25 +30,19 @@ const CONTRACT_ABI = [
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "uint256",
           "name": "votingId",
           "type": "uint256"
         },
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "uint256",
           "name": "candidateId",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "voter",
-          "type": "address"
         }
       ],
-      "name": "VoteCast",
+      "name": "Voted",
       "type": "event"
     },
     {
@@ -120,6 +114,11 @@ const CONTRACT_ABI = [
           "internalType": "uint256",
           "name": "_votingId",
           "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "userIdHash",
+          "type": "bytes32"
         }
       ],
       "name": "cancelVoting",
@@ -207,6 +206,11 @@ const CONTRACT_ABI = [
           "internalType": "string[]",
           "name": "_candidateParties",
           "type": "string[]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_creatorId",
+          "type": "bytes32"
         }
       ],
       "name": "createVoting",
@@ -267,6 +271,11 @@ const CONTRACT_ABI = [
               "internalType": "bool",
               "name": "isCanceled",
               "type": "bool"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "creatorId",
+              "type": "bytes32"
             }
           ],
           "internalType": "struct Voteasy.Voting[]",
@@ -559,6 +568,11 @@ const CONTRACT_ABI = [
           "internalType": "bool",
           "name": "isCanceled",
           "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "creatorId",
+          "type": "bytes32"
         }
       ],
       "stateMutability": "view",
