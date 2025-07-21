@@ -42,7 +42,7 @@ export default function RegisterForm( { role } : RegisterFormProps) {
         name: data.name,
         email: data.email,
         password: data.password,
-        role: "ORGANIZER",
+        role: role,
       });
       toast({
         variant: "success",
@@ -107,11 +107,11 @@ export default function RegisterForm( { role } : RegisterFormProps) {
         </div>
       </form>
 
-      <GoogleLoginButton role="ORGANIZER" />
+      <GoogleLoginButton role={role} />
 
       <p className="mt-10 text-center text-sm/6 text-gray-500">
         Já tem uma conta?
-        <a href="/auth/organizer/login" className="font-semibold text-primary hover:text-primary"> Faça login</a>
+        <a href={`/auth/${role}/register`} className="font-semibold text-primary hover:text-primary"> Faça login</a>
       </p>
     </>
   )

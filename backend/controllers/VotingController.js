@@ -5,6 +5,7 @@ const web3 = new Web3();
 const CONTRACT_ABI = require("../config/contract/config");
 const CONTRACT_ADDRESS = require("../config/contract/config");
 const { parseDateTimeToTimestamp } = require("../utils/dateUtils");
+const { getUserHash } = require("../utils/userHash");
 
 //TODO: Melhorar as validações e tratamentos de erros
 function initContract() {
@@ -67,8 +68,17 @@ function getVotingStatus(voting) {
 
 const votingController = {
   create: async (req, res) => {
+  //console.log("Cookies em createVoting:", req.cookies);
+  //console.log("req.user em createVoting:", req.user);
     try {
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ msg: "Usuário não autenticado" });
+
+      const creatorIdHash = getUserHash(userId)
+
       const { network, smartContract, signer } = initContract();
+      console.log("Contratos inicializados");
+
       const startTimestamp = parseDateTimeToTimestamp(
         req.body.startDate,
         req.body.startTime
@@ -86,7 +96,7 @@ const votingController = {
         req.body.candidateNames,
         req.body.candidateNumbers,
         req.body.candidateParties,
-        req.body.status
+        creatorIdHash
       );
 
       return await sendTransaction(tx, signer, network, res);
@@ -208,13 +218,22 @@ const votingController = {
     }
   },
 
-  getAllVotingsWithCandidates: async (req, res) => {
+  getUserVotingsWithCandidates: async (req, res) => {
     try {
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ msg: "Usuário não autenticado" });
+      
       const { smartContract } = initContract();
-      const votings = await smartContract.methods.getAllVotings().call();
+      const allVotings = await smartContract.methods.getAllVotings().call();
+      
+      const creatorIdHash =getUserHash(userId)
+
+      const userVotings = allVotings.filter(
+        (voting) => voting.creatorId?.toLowerCase() === creatorIdHash.toLowerCase()
+      );
 
       const votingsWithCounts = await Promise.all(
-        votings.map(async (voting, index) => {
+        userVotings.map(async (voting, index) => {
           const votingId = voting.id ?? index.toString();
           const candidates = await smartContract.methods
             .getCandidatesByVoting(votingId)
@@ -263,15 +282,20 @@ const votingController = {
 
   cancelVoting: async (req, res) => {
     try {
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ msg: "Usuário não autenticado" });
+
       const { network, signer, smartContract } = initContract();
       const { votingId } = req.body;
+
+      const creatorIdHash =getUserHash(userId)
 
       const voting = await smartContract.methods.getVoting(votingId).call();
       if (!voting) {
         return res.status(404).json({ error: "Votação não encontrado!" });
       }
 
-      const tx = smartContract.methods.cancelVoting(votingId);
+      const tx = smartContract.methods.cancelVoting(votingId, creatorIdHash);
       return await sendTransaction(tx, signer, network, res);
     } catch (error) {
       console.error("Erro ao cancelar votação:", error.message);

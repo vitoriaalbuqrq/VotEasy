@@ -2,9 +2,11 @@ const router = require("express").Router();
 const votingController = require("../controllers/VotingController");
 const { checkToken, checkRole} = require("../middlewares/authMiddleware");
 
+router.post("/voting", checkToken, checkRole("ORGANIZER"), votingController.create);
+
 //TODO: Melhorar nome das rotas correspondente ao front
-router.route("/voting", checkToken, checkRole("ORGANIZER"))
-  .post((req, res) => votingController.create(req, res));
+// router.route("/voting", checkToken, checkRole("ORGANIZER"))
+//   .post((req, res) => votingController.create(req, res));
 
 router.post("/vote", checkToken, votingController.vote);
 
@@ -18,11 +20,10 @@ router.get("/voting/:id", votingController.getVoting);
 
 router.get("/votings", votingController.getAllVotings);
 
-router.get("/votings/with-candidates", votingController.getAllVotingsWithCandidates);
+router.get("/votings/with-candidates", checkToken, votingController.getUserVotingsWithCandidates);
 
 router.get("/winner/:votingId", votingController.getWinner);
 
-router.post("/voting", checkToken, checkRole("ORGANIZER"), votingController.create);
 
 /*router.route("/vote", checkToken)
   .post((req, res) => votingController.vote(req, res));

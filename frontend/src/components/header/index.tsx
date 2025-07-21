@@ -1,27 +1,29 @@
-import Link from "next/link"
-import { LinkButton } from "../linkButton"
+import { cookies } from "next/headers";
+import { jwtVerify, JWTPayload } from "jose";
+import { HeaderClient } from "./HeaderClient";
 
-export function Header() {
+export async function Header() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  let role: string | null = null;
+  let name: string | null = null;
 
-  return (
-    <header className="w-full flex items-center px-2 py-4 bg-white md:h-20 shadow-sm flex-wrap">
-      <div className="w-full flex items-center justify-between max-w-7xl mx-auto text-primary font-medium flex-wrap">
-        <Link href="/" className="hover:font-bold transition-transform duration-300 hover:scale-105">
-          <h1 className="font-bold text-2xl pl-1"><span>Vote</span>Easy</h1>
-        </Link>
+  if (token) {
+    try {
+      const secret = new TextEncoder().encode(process.env.SECRET);
+      const { payload } = await jwtVerify(token, secret);
 
-        <div className="flex items-baseline gap-7 uppercase flex-wrap">
-          <Link href="/votings" className="hover:bg-primary-hover px-3 py-2 hover:rounded-full transition-transform duration-300">Votações</Link>
-          <Link href="/dashboard" className="hover:bg-primary-hover px-3 py-2 hover:rounded-full transition-transform duration-300">Dashboard</Link>
-          <LinkButton href="/auth" text="Login" />
-        </div>
+      if (typeof payload.role === "string") {
+        role = payload.role;
+      }
 
-        {/* TODO: rotas privadas*/}
-        {/* <div className="flex items-baseline gap-4">
-          <Link href="">Dashboard</Link>
-        </div> */}
+      if (typeof payload.name === "string") {
+        name = payload.name;
+      }
 
-      </div>
-    </header>
-  )
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  return <HeaderClient role={role} name={name} />;
 }

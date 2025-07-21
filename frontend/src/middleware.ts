@@ -26,8 +26,27 @@ export function middleware(request: NextRequest) {
   if (!authToken && !publicRoute) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
-
     return NextResponse.redirect(redirectUrl);
+  }
+
+  if (authToken && path.startsWith("/dashboard")) {
+    try {
+      const payload = JSON.parse(
+        Buffer.from(authToken.value.split(".")[1], "base64").toString()
+      );
+
+      console.log("paylod", payload)
+
+      if (payload.role !== "ORGANIZER") {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/votings";
+        return NextResponse.redirect(redirectUrl);
+      }
+    } catch (e) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   if (authToken && publicRoute && publicRoute.whenAuthenticated === "redirect") {

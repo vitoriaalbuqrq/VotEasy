@@ -24,7 +24,7 @@ const oauthController = {
     //res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly; Max-Age=3600; Secure; SameSite=Strict`);
 
     // Redireciona para o dashboard com o token no cookie
-    res.redirect(`http://localhost:3000/auth/callback`);
+    res.redirect(`http://localhost:3000/auth/callback?role=${user.role}`);
     //res.redirect(`http://localhost:3000/dashboard?token=${token}`);
   },
 

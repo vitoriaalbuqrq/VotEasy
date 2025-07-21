@@ -9,6 +9,7 @@ export default function AuthCallback() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
+  const role = searchParams.get("role");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,7 +28,12 @@ export default function AuthCallback() {
     } else {
       // Redireciona normalmente
       const timer = setTimeout(() => {
-        router.replace("/dashboard");
+        if (role === "ORGANIZER") {
+          router.replace("/dashboard");
+        } else {
+          router.replace("/votings");
+          router.refresh();
+        }
       }, 100);
 
       return () => clearTimeout(timer);

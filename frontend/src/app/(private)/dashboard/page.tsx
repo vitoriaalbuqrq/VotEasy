@@ -113,7 +113,7 @@ export default function Dashboard() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-start text-gray-500 py-6">
+                <td colSpan={6} className="text-start text-gray-500 py-6 pl-3">
                   Nenhuma votação encontrada.
                 </td>
               </tr>

@@ -6,10 +6,11 @@ const oauthController = require("../controllers/oAuthController");
 router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.get("/confirm", authController.confirmEmail);
+router.get("/logout", authController.logout);
 
 // Google OAuth
 router.get("/auth/google", oauthController.googleAuth);
-router.get("/logout", oauthController.logout);
+
 router.get(
   "/auth/google/callback",
   (req, res, next) => {

@@ -12,6 +12,10 @@ import { z } from 'zod';
 import { AuthHeader } from "./AuthHeader";
 import { GoogleLoginButton } from "./GoogleLoginButton";
 
+interface LoginFormProps {
+  role: "USER" | "ORGANIZER"
+}
+
 const loginFormSchema = z.object({
   email: z.string()
     .min(1, 'O email é obrigatório')
@@ -22,10 +26,6 @@ const loginFormSchema = z.object({
 })
 
 type FormData = z.infer<typeof loginFormSchema>;
-
-interface LoginFormProps {
-  role: "USER" | "ORGANIZER"
-}
 
 export default function LoginForm({ role } : LoginFormProps) {
   const { toast } = useToast();
@@ -57,7 +57,14 @@ export default function LoginForm({ role } : LoginFormProps) {
         password: data.password
       });
       // redireciona após login
-      router.push("/dashboard");
+      const { role } = res.data.user as { role: "USER" | "ORGANIZER" };
+      if (role === "ORGANIZER") {
+        router.push("/dashboard");
+      } else {
+        router.push("/votings");
+      }
+      router.refresh();
+      //router.push("/dashboard");
     } catch (error: any) {
       const msg = error.response?.data?.msg || "Ocorreu um erro inesperado. Tente novamente mais tarde."
       toast({
@@ -102,11 +109,11 @@ export default function LoginForm({ role } : LoginFormProps) {
         </div>
       </form>
 
-      <GoogleLoginButton role="USER" />
+      <GoogleLoginButton role={role} />
 
       <p className="mt-10 text-center text-sm/6 text-gray-500">
         Ainda não tem cadastro?
-        <a href="/auth/organizer/register" className="font-semibold text-primary hover:text-primary"> Cadastre-se</a>
+        <a href={`/auth/${role}/register`} className="font-semibold text-primary hover:text-primary"> Cadastre-se</a>
       </p>
     </>
   )

@@ -5,6 +5,15 @@ const nodemailer = require("nodemailer");
 
 const prisma = new PrismaClient();
 
+const clearTokenCookie = (res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+  });
+};
+
 const authController = {
   register: async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -105,6 +114,7 @@ const authController = {
         {
           id: user.id,
           role: user.role,
+          name: user.name
         },
         secret,
         { expiresIn: "7d" }
@@ -158,6 +168,21 @@ const authController = {
     return res.redirect("http://localhost:3000/auth/organizer/login?emailConfirmed=true");
     //return res.status(200).json({ msg: "Email confirmado com sucesso." });
   },
+  logout: (req, res, next) => {
+  // Se estiver autenticado pelo Passport (OAuth), faz logout
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    req.logout((err) => {
+      if (err) return next(err);
+      clearTokenCookie(res);
+      return res.status(200).json({ message: "Logout OAuth realizado com sucesso" });
+    });
+  } else {
+    // Logout tradicional (via JWT apenas)
+    clearTokenCookie(res);
+    return res.status(200).json({ message: "Logout comum realizado com sucesso" });
+  }
+},
+
 };
 
 module.exports = authController;
