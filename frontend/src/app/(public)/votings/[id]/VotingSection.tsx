@@ -3,19 +3,29 @@
 import { PublicCandidate } from "@/types/voting";
 import api from "@/lib/axios/config";
 import { Card } from "./components/card";
+import { useToast } from "@/hooks/use-toast";
 
 interface VotingSectionProps {
   votingId: string;
   candidates: PublicCandidate[];
 }
 
+//TODO: adicionar loading durante a confirmação da transação
 export default function VotingSection({ votingId, candidates }: VotingSectionProps) {
+  const { toast } = useToast();
+
   const handleVote = async (candidateId: string) => {
     try {
-      await api.post("/vote", { votingId, candidateId });
-      console.log("Voto computado com sucesso!");
-    } catch (error) {
-      console.log("Erro ao computar voto.");
+      const res = await api.post("/vote", { votingId, candidateId });
+      toast({
+        variant: "success",
+        title: res.data.message,
+      })
+    } catch (err: any) {
+      toast({
+        variant: "error",
+        title: err.response?.data?.message,
+      })
     }
   };
 

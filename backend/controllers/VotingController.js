@@ -5,6 +5,8 @@ const web3 = new Web3();
 const CONTRACT_ABI = require("../config/contract/config");
 const CONTRACT_ADDRESS = require("../config/contract/config");
 const { parseDateTimeToTimestamp } = require("../utils/dateUtils");
+const { decodeRevertReason } = require("../utils/decodeRevertReason");
+const { success, error } = require("../utils/responseHandler");
 const { getUserHash } = require("../utils/userHash");
 
 //TODO: Melhorar as validações e tratamentos de erros
@@ -27,7 +29,7 @@ function initContract() {
   return { network, signer, smartContract };
 }
 
-async function sendTransaction(tx, signer, network, res) {
+async function sendTransaction(tx, signer, network, res, message, status) {
   try {
     const receipt = await tx
       .send({
@@ -40,17 +42,23 @@ async function sendTransaction(tx, signer, network, res) {
       });
 
     console.log(`Mined in block ${receipt.blockNumber}`);
-    return res.status(200).json({
-      receipt: JSON.parse(
-        JSON.stringify(receipt, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
-        )
-      ),
-      msg: "Transação confirmada!",
-    });
-  } catch (error) {
-    console.error("Erro na transação:", error);
-    return res.status(500).json({ error: error.message });
+    return success(res, message, JSON.parse(
+      JSON.stringify(receipt, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      ), 
+      status
+    ));
+  } catch (err) {
+    console.error("Erro na transação:", err);
+    let revertMessage = err.message || "Erro interno na transação.";
+
+    if (err?.data) {
+      revertMessage = decodeRevertReason(err.data);
+    } else if (err?.cause?.data) {
+      revertMessage = decodeRevertReason(err.cause.data);
+    }
+
+    return error(res, revertMessage);
   }
 }
 
@@ -68,25 +76,16 @@ function getVotingStatus(voting) {
 
 const votingController = {
   create: async (req, res) => {
-  //console.log("Cookies em createVoting:", req.cookies);
-  //console.log("req.user em createVoting:", req.user);
     try {
       const userId = req.user?.id;
-      if (!userId) return res.status(401).json({ msg: "Usuário não autenticado" });
+      if (!userId) return error(res, "Usuário não autenticado!", 401);
 
       const creatorIdHash = getUserHash(userId)
 
       const { network, smartContract, signer } = initContract();
-      console.log("Contratos inicializados");
 
-      const startTimestamp = parseDateTimeToTimestamp(
-        req.body.startDate,
-        req.body.startTime
-      );
-      const endTimestamp = parseDateTimeToTimestamp(
-        req.body.endDate,
-        req.body.endTime
-      );
+      const startTimestamp = parseDateTimeToTimestamp(req.body.startDate, req.body.startTime);
+      const endTimestamp = parseDateTimeToTimestamp(req.body.endDate, req.body.endTime);
 
       const tx = smartContract.methods.createVoting(
         req.body.name,
@@ -99,21 +98,18 @@ const votingController = {
         creatorIdHash
       );
 
-      return await sendTransaction(tx, signer, network, res);
-      //res.status(201).json({ response, msg: "Votação criada com sucesso!"});
-    } catch (error) {
-      return res.status(500).json({ error: "Erro ao criar a votação" });
+      return await sendTransaction(tx, signer, network, res, "Votação criada com sucesso!", 201);
+    } catch (err) {
+      console.error("Erro ao criar votação:", err);
+      return error(res, "Erro ao criar a votação!");
     }
   },
   vote: async (req, res) => {
     try {
       const { network, signer, smartContract } = initContract();
-
       const userId = req.user?.id;
 
-      if (!userId) {
-        return res.status(401).json({msg: "Usuário não autenticado"})
-      }
+      if (!userId) return error(res, "Usuário não autenticado!", 401);
 
       //Hash unico do usuario
       const userIdHash = web3.utils.keccak256(userId.toString());
@@ -124,10 +120,11 @@ const votingController = {
         userIdHash
       );
 
-      return await sendTransaction(tx, signer, network, res);
+      return await sendTransaction(tx, signer, network, res, "Voto confirmado!", 201);
       //res.status(201).json({ response, msg: "Voto confirmado!"});
-    } catch (error) {
-      return res.status(500).json({ error: "Erro ao votar" });
+    } catch (err) {
+      console.error("Erro ao votar:", err);
+      return error(res, "Erro ao votar!");
     }
   },
 
@@ -147,9 +144,9 @@ const votingController = {
           )
         )
       );
-    } catch (error) {
-      console.error("Erro ao buscar candidato:", error.message);
-      return res.status(500).json({ error: "Erro ao buscar candidato" });
+    } catch (err) {
+      console.error("Erro ao buscar candidato:", err.message);
+      return error(res, "Erro ao buscar candidato!");
     }
   },
   getCandidatesByVoting: async (req, res) => {
@@ -166,8 +163,9 @@ const votingController = {
           )
         )
       );
-    } catch (error) {
-      console.error("Erro ao buscar candidatos:", error.message);
+    } catch (err) {
+      console.error("Erro ao buscar candidatos:", err.message);
+      return error(res, "Erro ao buscar candidatos!");
     }
   },
 
@@ -190,8 +188,9 @@ const votingController = {
           )
         )
       );
-    } catch (error) {
-      console.error("Erro ao buscar votação:", error.message);
+    } catch (err) {
+      console.error("Erro ao buscar votação:", err.message);
+      return error(res, "Erro ao buscar votação!");
     }
   },
 
@@ -213,8 +212,9 @@ const votingController = {
           )
         )
       );
-    } catch (error) {
-      console.error("Erro ao buscar votações:", error.message);
+    } catch (err) {
+      console.error("Erro ao buscar votações:", err.message);
+      return error(res, "Erro ao buscar votações!");
     }
   },
 
@@ -255,11 +255,9 @@ const votingController = {
           )
         )
       );
-    } catch (error) {
-      console.error("Erro ao buscar votações com candidatos:", error.message);
-      return res
-        .status(500)
-        .json({ error: "Erro ao buscar votações com candidatos" });
+    } catch (err) {
+      console.error("Erro ao buscar votações com candidatos:", err.message);
+      return error(res, "Erro ao buscar votações com candidatos!");
     }
   },
 
@@ -275,8 +273,9 @@ const votingController = {
           )
         )
       );
-    } catch (error) {
-      console.error("Erro ao buscar ganhador:", error.message);
+    } catch (err) {
+      console.error("Erro ao buscar ganhador:", err.message);
+      return error(res, "Erro ao buscar ganhador!");
     }
   },
 
@@ -296,12 +295,10 @@ const votingController = {
       }
 
       const tx = smartContract.methods.cancelVoting(votingId, creatorIdHash);
-      return await sendTransaction(tx, signer, network, res);
-    } catch (error) {
-      console.error("Erro ao cancelar votação:", error.message);
-      return res
-        .status(500)
-        .json({ error: "Erro ao cancelar votação" });
+      return await sendTransaction(tx, signer, network, res, "Votação cancelada!", 201);
+    } catch (err) {
+      console.error("Erro ao cancelar votação:", err.message);
+      return error(res, "Erro ao cancelar votação!");
     }
   },
 };

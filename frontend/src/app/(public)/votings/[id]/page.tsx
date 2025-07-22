@@ -2,6 +2,7 @@ import { Container } from "@/components/container";
 import VotingSection from "./VotingSection";
 import api from "@/lib/axios/config";
 import { PublicCandidate, Voting } from "@/types/voting";
+import { useToast } from "@/hooks/use-toast";
 
 interface VotingPageProps {
   params: { id: string };
