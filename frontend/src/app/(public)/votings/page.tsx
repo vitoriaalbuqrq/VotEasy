@@ -25,7 +25,7 @@ export default function Votings() {
 
   const activeVotings = filtered.filter((v) => v.status === STATUS.active)
   const scheduledVotings = filtered.filter((v) => v.status === STATUS.scheduled)
-  const finalizedVotings = filtered.filter((v) => v.status === STATUS.finalized)
+  //const finalizedVotings = filtered.filter((v) => v.status === STATUS.finalized)
 
   return (
     <main className="bg-gray-100 flex flex-col items-start justify-start min-h-[100vh]">
@@ -58,11 +58,11 @@ export default function Votings() {
           emptyMessage="Ainda não há votações programadas."
         />
 
-        <VotingSection
+        {/* <VotingSection
           title="Finalizadas"
           votings={finalizedVotings}
           emptyMessage="Ainda não há votações finalizadas."
-        />
+        /> */}
 
 
       </div>

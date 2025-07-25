@@ -5,9 +5,10 @@ import { FaUser } from "react-icons/fa";
 interface CardProps extends PublicCandidate {
   votingId: string;
   onVote: (candidateId: string) => void;
+  isLoading?: boolean;
 }
 
-export function Card({ name, number, party, id, votingId, onVote }: CardProps) {
+export function Card({ name, number, party, id, votingId, onVote, isLoading = false }: CardProps) {
   return (
     <div className="flex flex-col justify-center items-center gap-2 border border-secondary sm:w-80 p-4 rounded-2xl">
       {/* <Image
@@ -26,11 +27,16 @@ export function Card({ name, number, party, id, votingId, onVote }: CardProps) {
         <button className="flex-1 px-5 py-2 font-bold uppercase border border-secondary text-secondary text-center rounded-full hover:opacity-90 transition-colors">
           Detalhes
         </button>
+
         <button
-          className="flex-1 px-5 py-2 font-bold uppercase bg-tertiary text-white text-center rounded-full hover:opacity-90 transition-colors"
-          onClick={() => onVote(id)}>
-          Votar
-        </button>
+        onClick={() => onVote(id)}
+        disabled={isLoading}
+        className={`flex-1 px-5 py-2 font-bold uppercase bg-tertiary text-white text-center rounded-full transition-opacity duration-200 ${
+          isLoading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90 transition-colors"
+        }`}
+      >
+        Votar
+      </button>
       </div>
     </div>
   )

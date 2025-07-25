@@ -54,7 +54,9 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
     const payload = {
       ...rest,
       startDate: values.startDate.split("T")[0],
+      startTime: values.startDate.split("T")[1].slice(0, 5),
       endDate: values.endDate.split("T")[0],
+      endTime: values.endDate.split("T")[1].slice(0, 5),
       candidateNames,
       candidateNumbers,
       candidateParties,
@@ -68,7 +70,6 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
   } catch (error){
     console.error("Erro ao criar votação:", error);
   }
-  
 }
 
 //5 - Define multistep data

@@ -9,13 +9,15 @@ import { STATUS, Voting } from "@/types/voting";
 import { formatTimestamp } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { SearchInput } from "@/app/(public)/votings/components/searchInput";
+import { useToast } from "@/hooks/use-toast";
 
 //TODO: Adiconar loading enquanto atualiza status apos cancelar
 //TODO: Mostrar apenas votações referente ao usuario
 export default function Dashboard() {
-
+  const { toast } = useToast();
   const [votings, setVotings] = useState<Voting[]>([]);
   const [search, setSearch] = useState("");
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   //TODO: Adicionar loading durante o cancelamento
   useEffect(() => {
@@ -25,13 +27,22 @@ export default function Dashboard() {
   }, []);
 
   const handleCancel = async (id: Voting['id']) => {
-    await api.post('cancel-voting', {
-      votingId: id,
-    });
-
-    setVotings(prev => prev.map(v => v.id === id ? { ...v, status: STATUS.canceled } : v
-    )
-    );
+    try {
+      setLoadingId(id);
+      await api.post('cancel-voting', {
+        votingId: id,
+      });
+      setVotings(prev => prev.map(v => v.id === id ? { ...v, status: STATUS.canceled } : v
+      )
+      );
+    } catch (err: any) {
+      toast({
+        variant: "error",
+        title: err.response?.data?.message,
+      })
+    } finally {
+      setLoadingId(null);
+    }
   }
 
   const statusCounts = {
@@ -128,6 +139,7 @@ export default function Dashboard() {
                   endDate={formatTimestamp(voting.endDate)}
                   qntCandidates={voting.qntCandidates}
                   onCancel={handleCancel}
+                  isLoading={loadingId === voting.id}
                 />
               )
             )}
