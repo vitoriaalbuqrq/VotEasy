@@ -9,6 +9,8 @@ const { decodeRevertReason } = require("../utils/decodeRevertReason");
 const { success, error } = require("../utils/responseHandler");
 const { getUserHash } = require("../utils/userHash");
 
+const UINT_MAX = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+
 //TODO: Melhorar as validações e tratamentos de erros
 function initContract() {
   const network = process.env.ETHEREUM_NETWORK;
@@ -60,6 +62,11 @@ async function sendTransaction(tx, signer, network, res, message, status) {
 
     return error(res, revertMessage);
   }
+}
+
+async function finalizeVotingTransaction(votingId, signer, network, smartContract, res) {
+  const tx = smartContract.methods.finalizeVoting(votingId);
+  return await sendTransaction(tx, signer, network, res, "Votação finalizada automaticamente", 200);
 }
 
 function getVotingStatus(voting) {
@@ -263,18 +270,47 @@ const votingController = {
 
   getWinner: async (req, res) => {
     try {
-      const { smartContract } = initContract();
       const votingId = req.params.votingId;
-      const voting = await smartContract.methods.getWinner(votingId).call();
-      return res.json(
-        JSON.parse(
-          JSON.stringify(voting, (key, value) =>
-            typeof value === "bigint" ? value.toString() : value
-          )
+
+      if (!votingId) return res.status(400).json({ msg: "ID inválido" });
+
+      const { signer, network, smartContract } = initContract();
+
+      const voting = await smartContract.methods.getVoting(votingId).call();
+
+      // Verifica se já passou do prazo
+      const now = Math.floor(Date.now() / 1000);
+      const ended = now > Number(voting.endDate);
+      const isCanceled = voting.isCanceled;
+
+      if (isCanceled) {
+        return error(res, "Votação cancelada!");
+      }
+
+      if (!ended) {
+        return error(res, "Votação ainda está ativa!");
+      }
+
+      // Verifica se já foi finalizada:
+      // winnerIndex será diferente do UINT_MAX se finalizada
+      const alreadyFinalized = voting.winnerIndex.toString() !== UINT_MAX;
+
+      // Se não finalizada e já passou do fim, finaliza
+      if (!alreadyFinalized) {
+        await finalizeVotingTransaction(votingId, signer, network, smartContract, res);
+      }
+
+      const winner = await smartContract.methods.getWinner(votingId).call();
+
+      const parsedWinner = JSON.parse(
+        JSON.stringify(winner, (key, value) =>
+          typeof value === "bigint" ? value.toString() : value
         )
       );
+
+      return res.json(parsedWinner);
     } catch (err) {
-      console.error("Erro ao buscar ganhador:", err.message);
+      console.error("Erro ao buscar ganhador:", err);
       return error(res, "Erro ao buscar ganhador!");
     }
   },

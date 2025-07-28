@@ -43,7 +43,7 @@ export function VoteItem({ id, name, status, startDate, endDate, qntCandidates, 
             >
               {isLoading ? (
                 <span className="h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-              ) : status === STATUS.canceled ? 'Cancelado' : 'Cancelar'}
+              ) : status === STATUS.canceled ? 'Cancelada' : 'Cancelar'}
             </button>
 
             <Link href={`/dashboard/voting/${id}`} className="bg-secondary text-white font-medium rounded-full px-3 py-1 mr-2 hover:opacity-90 whitespace-nowrap">

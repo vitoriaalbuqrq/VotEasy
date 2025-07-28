@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { STATUS, VotingStatus } from "@/types/voting";
+import api from "@/lib/axios/config";
+import { Candidate, STATUS, VotingStatus } from "@/types/voting";
 import { formatTimestamp } from "@/utils/format";
 import Link from "next/link";
 import { FaLock } from "react-icons/fa";

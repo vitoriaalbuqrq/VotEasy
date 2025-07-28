@@ -1,24 +1,36 @@
 "use client"
-import { useState } from "react"
+import { use } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { BarChart, CartesianGrid, XAxis, Bar, Cell, LabelList } from "recharts"
 import { FaUser } from "react-icons/fa"
+import { Candidate, Voting } from "@/types/voting"
+import api from "@/lib/axios/config"
+import { VoteStatus } from "../components/voteStatus"
 
-export default function VotingDetails() {
-  const [voting] = useState({
-    name: "Eleição para Representante de Turma",
-    status: "active",
-  })
+interface VotingDetails {
+  params: Promise<{ id: string }>;
+}
 
-  const [candidates] = useState([
-    { id: "1", name: "Ana Silva", number: 10, party: "Partido A", votes: 120 },
-    { id: "2", name: "Bruno Costa ramalho silva", number: 22, party: "Partido B", votes: 80 },
-    { id: "3", name: "Carlos Souza", number: 31, party: "Partido C", votes: 50 },
-    //{ id: "3", name: "Carlos Souza", number: 31, party: "Partido C", votes: 50 },
-  ])
+export default function VotingDetails({ params }: VotingDetails) {
+  const { id: votingId } = use(params);
+  const [voting, setVoting] = useState<Voting | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
 
-  const totalVotes = candidates.reduce((acc, c) => acc + c.votes, 0)
+  useEffect(() => {
+    api.get(`voting/${votingId}`)
+      .then(res => setVoting(res.data))
+      .catch(err => console.error('Erro ao buscar votação:', err));
+  }, []);
+
+  useEffect(() => {
+    api.get(`candidates/${votingId}`)
+      .then(res => setCandidates(res.data))
+      .catch(err => console.error('Erro ao buscar votação:', err));
+  }, []);
+
+  const totalVotes = candidates.reduce((acc, c) => acc + Number(c.votes), 0)
 
   const barColors = ["#3f88c5", "#55a630", "#f22b29"]
 
@@ -37,14 +49,17 @@ export default function VotingDetails() {
 
   return (
     <main className="p-4 max-w-5xl mx-auto">
-      <header className="flex justify-between mb-10">
-        <div>
-          <h1 className="font-bold text-2xl text-primary">Detalhes da Votação</h1>
-          <p className="font-medium text-gray-500 text-lg">{voting.name}</p>
+      <header className="mb-10">
+        <h1 className="font-bold text-2xl text-primary">Detalhes da Votação</h1>
+        <div className="flex justify-between mt-3">
+          <p className="font-medium text-gray-600 text-lg">{voting?.name}</p>
+          {voting?.status && (
+            <p className="font-medium text-gray-500">
+              Status: <VoteStatus status={voting.status} />
+            </p>
+          )}
         </div>
-        <p className="font-medium text-gray-500">
-          Status: <span className="px-3 py-1 rounded-full bg-green-200 text-green-800 font-semibold">Ativa</span>
-        </p>
+
       </header>
 
       <section className="flex flex-col gap-4 sm:flex-row">
@@ -69,7 +84,7 @@ export default function VotingDetails() {
                     <h1 className="font-medium mt-1">{c.name}</h1>
                     <p className="text-gray-600 font-bold">Nº {c.number}</p>
                     {c.party && <p className="text-gray-500 text-sm">{c.party}</p>}
-                    <h2 className="font-bold text-2xl mt-3">{percentage.toFixed(2)}%</h2>
+                    <h2 className="font-bold text-2xl mt-3">{percentage.toFixed(1)}%</h2>
                     <p className="text-gray-600">{c.votes} votos</p>
                   </Card>
                 )

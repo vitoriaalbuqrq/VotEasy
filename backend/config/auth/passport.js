@@ -14,14 +14,12 @@ passport.use(
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, profile, done) => {
-      console.log("req.query no GoogleStrategy:", req.query);
+      //console.log("req.query no GoogleStrategy:", req.query);
       //TODO: Resolver atribuição de role
       const validRoles = ['USER', 'ORGANIZER'];
       const rawState = req.query.state?.toUpperCase(); 
       const rawRole = validRoles.includes(rawState) ? rawState : 'USER';
       const role = Role[rawRole];
-
-      console.log("ROLE determinada no backend:", rawRole);
 
       try {
   
