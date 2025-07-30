@@ -64,9 +64,16 @@ async function sendTransaction(tx, signer, network, res, message, status) {
   }
 }
 
-async function finalizeVotingTransaction(votingId, signer, network, smartContract, res) {
+async function finalizeVotingTransaction(votingId) {
+  const { network, signer, smartContract } = initContract();
   const tx = smartContract.methods.finalizeVoting(votingId);
-  return await sendTransaction(tx, signer, network, res, "Votação finalizada automaticamente", 200);
+
+  const receipt = await tx.send({
+    from: signer.address,
+    gas: await tx.estimateGas(),
+  });
+
+  return receipt;
 }
 
 function getVotingStatus(voting) {
@@ -297,7 +304,7 @@ const votingController = {
 
       // Se não finalizada e já passou do fim, finaliza
       if (!alreadyFinalized) {
-        await finalizeVotingTransaction(votingId, signer, network, smartContract, res);
+        await finalizeVotingTransaction(votingId);
       }
 
       const winner = await smartContract.methods.getWinner(votingId).call();

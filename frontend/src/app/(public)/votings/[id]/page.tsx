@@ -1,7 +1,7 @@
 import { Container } from "@/components/container";
 import VotingSection from "./VotingSection";
 import api from "@/lib/axios/config";
-import { PublicCandidate, STATUS, Voting } from "@/types/voting";
+import { Candidate, STATUS, Voting } from "@/types/voting";
 import { useToast } from "@/hooks/use-toast";
 import { use } from "react";
 import WinnerSection from "./WinnerSection";
@@ -17,18 +17,16 @@ export default async function VotingPage({ params }: VotingPageProps) {
   const voting: Voting = votingRes.data;
 
   const candidateRes = await api.get(`/candidates/${votingId}`);
-  const candidates: PublicCandidate[] = candidateRes.data;
+  const candidates: Candidate[] = candidateRes.data;
 
   const isFinalized = voting.status === STATUS.finalized;
 
-  let winnerCandidate: PublicCandidate | null = null;
+  let winnerCandidate: Candidate | null = null;
 
   if (isFinalized) {
     try {
-      console.log("ID VOTING: ", votingId)
       const res = await api.get(`winner/${votingId}`);
       winnerCandidate = res.data;
-      console.log("winnerCandidate data:", winnerCandidate)
     } catch (err) {
       console.error("Erro ao buscar vencedor:", err);
     }
@@ -45,7 +43,7 @@ export default async function VotingPage({ params }: VotingPageProps) {
             <p className="text-gray-500 mt-3">{voting.description}</p>
           </header>
           {isFinalized && winnerCandidate ? (
-            <WinnerSection votingId={votingId} candidate={winnerCandidate}/>
+            <WinnerSection candidates={candidates} candidate={winnerCandidate}/>
           ): (
             <VotingSection votingId={votingId} candidates={candidates} />
           )}

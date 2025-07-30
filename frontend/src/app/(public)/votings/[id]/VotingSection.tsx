@@ -1,6 +1,6 @@
 'use client'
 
-import { PublicCandidate } from "@/types/voting";
+import { Candidate } from "@/types/voting";
 import api from "@/lib/axios/config";
 import { Card } from "./components/card";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +9,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface VotingSectionProps {
   votingId: string;
-  candidates: PublicCandidate[];
+  candidates: Candidate[];
 }
 
 //TODO: adicionar loading durante a confirmação da transação

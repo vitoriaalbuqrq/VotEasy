@@ -55,10 +55,3 @@ export interface Candidate {
   party: string;
   votes: number;
 }
-
-export interface PublicCandidate {
-  id: string;
-  name: string;
-  number: string | number;
-  party: string;
-}

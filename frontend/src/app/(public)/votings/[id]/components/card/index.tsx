@@ -1,8 +1,8 @@
 'use client'
-import { PublicCandidate } from "@/types/voting";
+import { Candidate} from "@/types/voting";
 import { FaUser } from "react-icons/fa";
 
-interface CardProps extends PublicCandidate {
+interface CardProps extends Candidate {
   votingId: string;
   onVote: (candidateId: string) => void;
   isLoading?: boolean;
