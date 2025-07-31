@@ -8,7 +8,6 @@ export const StatusColors: Record<VotingStatus, string> = {
 };
 
 export function VoteStatus({ status }: { status: VotingStatus }) {
-  console.log("STATUS:", status);
   return (
     <span className={`${StatusColors[status]} px-3 py-1 rounded-full`}>
       {StatusLabels[status]}

@@ -8,6 +8,7 @@ import { FaUser } from "react-icons/fa"
 import { Candidate, Voting } from "@/types/voting"
 import api from "@/lib/axios/config"
 import { VoteStatus } from "../components/voteStatus"
+import { calculateVotePercentages } from "@/utils/result"
 
 interface VotingDetails {
   params: Promise<{ id: string }>;
@@ -30,11 +31,11 @@ export default function VotingDetails({ params }: VotingDetails) {
       .catch(err => console.error('Erro ao buscar votação:', err));
   }, []);
 
-  const totalVotes = candidates.reduce((acc, c) => acc + Number(c.votes), 0)
+  const { totalVotes, candidatesWithPercentage } = calculateVotePercentages(candidates);
 
   const barColors = ["#3f88c5", "#55a630", "#f22b29"]
 
-  const chartData = candidates.map((c, i) => ({
+  const chartData = candidatesWithPercentage.map((c, i) => ({
     name: c.name,
     votes: c.votes,
     color: barColors[i % barColors.length],
@@ -67,8 +68,7 @@ export default function VotingDetails({ params }: VotingDetails) {
           <Card className="">
             <CardHeader className="font-semibold text-lg">Candidatos</CardHeader>
             <CardContent className="flex flex-col gap-2 sm:flex-row flex-wrap">
-              {candidates.map((c, i) => {
-                const percentage = totalVotes > 0 ? (c.votes / totalVotes) * 100 : 0
+              {candidatesWithPercentage.map((c, i) => {
                 const color = barColors[i % barColors.length]
                 const bgColorWithOpacity = `${color}30`
 
@@ -84,7 +84,7 @@ export default function VotingDetails({ params }: VotingDetails) {
                     <h1 className="font-medium mt-1">{c.name}</h1>
                     <p className="text-gray-600 font-bold">Nº {c.number}</p>
                     {c.party && <p className="text-gray-500 text-sm">{c.party}</p>}
-                    <h2 className="font-bold text-2xl mt-3">{percentage.toFixed(1)}%</h2>
+                    <h2 className="font-bold text-2xl mt-3">{c.percentage.toFixed(2)}%</h2>
                     <p className="text-gray-600">{c.votes} votos</p>
                   </Card>
                 )

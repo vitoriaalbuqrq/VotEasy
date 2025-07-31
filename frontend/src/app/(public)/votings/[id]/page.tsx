@@ -43,7 +43,7 @@ export default async function VotingPage({ params }: VotingPageProps) {
             <p className="text-gray-500 mt-3">{voting.description}</p>
           </header>
           {isFinalized && winnerCandidate ? (
-            <WinnerSection candidates={candidates} candidate={winnerCandidate}/>
+            <WinnerSection candidates={candidates} winnerCandidate={winnerCandidate}/>
           ): (
             <VotingSection votingId={votingId} candidates={candidates} />
           )}
