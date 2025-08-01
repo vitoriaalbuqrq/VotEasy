@@ -8,12 +8,14 @@ import { useState } from "react";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface VotingSectionProps {
+  votingName: string;
+  votingDescription: string;
   votingId: string;
   candidates: Candidate[];
 }
 
 //TODO: adicionar loading durante a confirmação da transação
-export default function VotingSection({ votingId, candidates }: VotingSectionProps) {
+export default function VotingSection({ votingName, votingDescription, votingId, candidates }: VotingSectionProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -37,10 +39,16 @@ export default function VotingSection({ votingId, candidates }: VotingSectionPro
 
   return (
     <>
-    {loading && (
-      <LoadingSpinner/>
-    )}
+      {loading && (
+        <LoadingSpinner />
+      )}
       <section className="flex justify-center gap-3 flex-wrap my-8">
+        <header className="mb-14 text-center px-5">
+          <h1 className="font-bold text-2xl sm:text-3xl text-secondary">
+            {votingName}: Quem você quer que ganhe?
+          </h1>
+          <p className="text-gray-500 mt-3">{votingDescription}</p>
+        </header>
         {candidates.map(candidate => (
           <Card
             key={candidate.id}

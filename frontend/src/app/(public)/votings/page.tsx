@@ -42,7 +42,9 @@ export default function Votings() {
           <div className="ms-auto flex gap-3">
 
             <p className="font-medium text-gray-600 bg-gray-300 rounded-full px-3 py-1">Todas</p>
-            <p className="font-medium text-gray-600 bg-gray-300 rounded-full px-3 py-1">Recentes</p>
+            <p className="font-medium text-gray-600 bg-gray-300 rounded-full px-3 py-1">Ativas</p>
+            <p className="font-medium text-gray-600 bg-gray-300 rounded-full px-3 py-1">Programadas</p>
+            <p className="font-medium text-gray-600 bg-gray-300 rounded-full px-3 py-1">Programadas</p>
           </div>
         </div>
 

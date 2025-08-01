@@ -19,7 +19,7 @@ export function CardWinnerCandidate({ candidate, isWinner, index }: CardProps) {
         </h1>
         <div className="flex flex-col w-full">
           <div className="flex justify-between">
-            <h2 className="font-bold text-xl">{candidate.name}
+            <h2 className="font-bold text-lg">{candidate.name}
               {candidate.party && (
                 <span> | {candidate.party}</span>
               )}

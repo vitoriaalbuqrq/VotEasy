@@ -36,16 +36,10 @@ export default async function VotingPage({ params }: VotingPageProps) {
     <Container>
       <main className="bg-white m-auto shadow-md rounded-lg sm:max-w-[95%]">
         <div className="flex flex-col justify-center items-center p-3 sm:py-12 sm:px-10">
-          <header className="mb-14 text-center px-5">
-            <h1 className="font-bold text-2xl sm:text-3xl text-secondary">
-              {voting.name}: Quem você quer que ganhe?
-            </h1>
-            <p className="text-gray-500 mt-3">{voting.description}</p>
-          </header>
           {isFinalized && winnerCandidate ? (
-            <WinnerSection candidates={candidates} winnerCandidate={winnerCandidate}/>
+            <WinnerSection votingName={voting.name} candidates={candidates} winnerCandidate={winnerCandidate}/>
           ): (
-            <VotingSection votingId={votingId} candidates={candidates} />
+            <VotingSection votingId={votingId} votingName={voting.name} votingDescription={voting.description} candidates={candidates} />
           )}
         </div>
       </main>
