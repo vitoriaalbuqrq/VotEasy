@@ -23,7 +23,7 @@ export default function WinnerSection({ votingName, candidates, winnerCandidate 
       <section className="flex flex-col items-center gap-2 mb-5">
         <div className="flex flex-col items-center">
           <p className="text-2xl font-medium text-primary">{winnerCandidate.name}</p>
-          <img src="/assets/images/img-trophy.png" alt="image-winner" className="w-[250px] drop-shadow" />
+          <img src="/assets/images/img-trophy.png" alt="image-winner" className="w-[250px]" />
 
           {/* <div className="relative">
             <div className="flex justify-center items-center w-16 h-16 border rounded-full bg-gray-50">

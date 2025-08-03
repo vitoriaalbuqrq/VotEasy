@@ -10,6 +10,7 @@ import api from "@/lib/axios/config"
 import { VoteStatus } from "../components/voteStatus"
 import { calculateVotePercentages } from "@/utils/result"
 
+//TODO: Em votações finalizadas exibir cantidado vencedor
 interface VotingDetails {
   params: Promise<{ id: string }>;
 }
