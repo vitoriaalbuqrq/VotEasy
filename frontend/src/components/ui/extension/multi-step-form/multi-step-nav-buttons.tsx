@@ -20,7 +20,7 @@ function MultiStepNavButtons<T extends UseMultiStepFormTypeOptions<any>>({ previ
     <div className='flex flex-row w-full justify-between mt-6'>
       {debug && (<pre className="flex justify-center items-center absolute w-32 h-32 right-2 bottom-2 bg-yellow-400 text-black text-sm border-2 rounded-md">{`Current Step: ${currentStep}`}</pre>)}
       <Button
-        variant={'default'}
+        variant={'outline'}
         size={'sm'}
         onClick={() => {
           previousStep()

@@ -50,19 +50,24 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
     const candidateNumbers = candidates.map(c => c.number ?? 0);
     const candidateParties = candidates.map(() => "");
     
+    console.log("startDate:", values.startDate)
+    console.log("endDate:", values.endDate)
+    console.log("startTime:", values.startTime)
+    console.log("endTime:", values.endTime)
+
     //TODO: Verificar as datas e conversões
     const payload = {
       ...rest,
       startDate: values.startDate.split("T")[0],
-      startTime: values.startDate.split("T")[1].slice(0, 5),
       endDate: values.endDate.split("T")[0],
-      endTime: values.endDate.split("T")[1].slice(0, 5),
+      startTime: values.startTime,  
+      endTime: values.endTime,
       candidateNames,
       candidateNumbers,
       candidateParties,
     };
     
-    console.log(payload)
+    //console.log(payload)
     await api.post("voting", payload);
 
     console.log("Votação criada com sucesso.", payload)

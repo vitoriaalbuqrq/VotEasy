@@ -34,7 +34,7 @@ export default async function VotingPage({ params }: VotingPageProps) {
 
   return (
     <Container>
-      <main className="bg-white m-auto shadow-md rounded-lg sm:max-w-[95%]">
+      <main className="w-auto bg-white m-auto shadow-md rounded-lg sm:max-w-[95%]">
         <div className="flex flex-col justify-center items-center p-3 sm:py-12 sm:px-10">
           {isFinalized && winnerCandidate ? (
             <WinnerSection votingName={voting.name} candidates={candidates} winnerCandidate={winnerCandidate}/>

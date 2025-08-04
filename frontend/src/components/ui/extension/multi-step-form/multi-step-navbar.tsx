@@ -16,7 +16,7 @@ function MultiStepNavbar<T extends UseMultiStepFormTypeOptions<any>>({ className
     const { currentStepLabel, labels } = useMultiStepForm(context)
     return (
         <ul className={cn(
-                "flex justify-around items-center border-2 rounded-lg",
+                "flex justify-around items-center border-2 rounded-xl",
                 className
             )}
             {...props}

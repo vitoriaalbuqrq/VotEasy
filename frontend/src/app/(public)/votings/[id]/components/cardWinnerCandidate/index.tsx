@@ -13,7 +13,7 @@ export function CardWinnerCandidate({ candidate, isWinner, index }: CardProps) {
   return (
     <div className={`${isWinner ? 'bg-primary-hover' : 'bg-white'} py-2 px-3 w-full rounded-xl shadow-md`}>
       <div className="flex items-center gap-2">
-        <h1 className={`${isWinner ? 'text-primary' : 'text-gray-500'} text-4xl font-extrabold w-10 text-center opacity-40`}>
+        <h1 className={`${isWinner ? 'text-primary' : 'text-gray-500'} text-5xl font-extrabold w-10 text-center opacity-40`}>
           {index}
         </h1>
         <div className="flex flex-col w-full">
