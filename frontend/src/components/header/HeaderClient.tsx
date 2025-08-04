@@ -6,6 +6,7 @@ import { useState } from "react";
 import { LinkButton } from "../linkButton";
 import api from "@/lib/axios/config";
 import { IoIosArrowDown, IoIosLogOut } from "react-icons/io";
+import { Logo } from "../logo";
 
 type Props = {
   role: string | null;
@@ -30,9 +31,7 @@ export function HeaderClient({ role, name }: Props) {
   return (
     <header className="w-full flex items-center px-2 py-4 bg-white md:h-20 shadow-sm flex-wrap">
       <div className="w-full flex items-center justify-between max-w-7xl mx-auto text-primary font-medium flex-wrap">
-        <Link href="/" className="hover:font-bold transition-transform duration-300 hover:scale-105">
-          <h1 className="font-bold text-2xl pl-1"><span>Vote</span>Easy</h1>
-        </Link>
+      <Logo variant="dark"/>
 
         <div className="flex items-center gap-6 uppercase flex-wrap relative">
           <Link href="/votings" className="hover:bg-primary-hover px-3 py-2 hover:rounded-full transition-transform duration-300">

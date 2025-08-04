@@ -36,16 +36,17 @@ export default function Votings() {
             Votações públicas para você participar
           </h1>
         </header>
-        <div className="flex items-center justify-start my-8 gap-3">
-          <div className="sm:w-[60%] flex-1">
+        <div className="flex items-center justify-between my-8 gap-3">
+          <div className="sm:w-[60%]">
             <SearchInput value={search} onChange={setSearch} />
           </div>
-          <div className="ms-auto flex flex-1">
+          <div className="ms-auto flex">
             <FilterTag current={statusFilter} onChange={setStatusFilter} />
           </div>
         </div>
 
-        {statusFilter === "all" ? (
+        {statusFilter === "all" && search === "" ? (
+          // Exibir seções separadas por status
           <>
             {(["active", "scheduled", "finalized"] as VotingStatus[]).map((status) => {
               const votingsByStatus = filtered.filter((v) => v.status === status);
@@ -60,12 +61,18 @@ export default function Votings() {
             })}
           </>
         ) : (
+          // Exibir tudo em uma seção única (se tiver busca ou filtro diferente de "all")
           <VotingSection
-            title={`Votações ${StatusLabels[statusFilter]}`}
+            title={
+              search
+                ? `Resultados para "${search}"`
+                : `Votações ${StatusLabels[statusFilter as VotingStatus]}`
+            }
             votings={filtered}
             emptyMessage="Nenhuma votação encontrada com esse filtro."
           />
         )}
+
       </div>
     </main>
   );

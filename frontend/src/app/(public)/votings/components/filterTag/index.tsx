@@ -6,7 +6,9 @@ interface FilterTagProps {
 }
 
 export function FilterTag({ current, onChange }: FilterTagProps) {
-  const statusOptions: VotingFilter[] = ["all", ...Object.keys(STATUS) as VotingStatus[]];
+  const visibleStatuses: VotingStatus[] = ["scheduled", "active", "finalized"];
+  const statusOptions: VotingFilter[] = ["all", ...visibleStatuses];
+
 
   const tags = statusOptions.map((status) => ({
     value: status,

@@ -5,10 +5,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { BarChart, CartesianGrid, XAxis, Bar, Cell, LabelList } from "recharts"
 import { FaUser } from "react-icons/fa"
-import { Candidate, Voting } from "@/types/voting"
+import { Candidate, STATUS, Voting } from "@/types/voting"
 import api from "@/lib/axios/config"
 import { VoteStatus } from "../components/voteStatus"
 import { calculateVotePercentages } from "@/utils/result"
+import { Trophy, TrophyIcon } from "lucide-react"
+import { FaTrophy } from "react-icons/fa6"
+import { IoIosTrophy, IoMdTrophy } from "react-icons/io"
 
 //TODO: Em votações finalizadas exibir cantidado vencedor
 interface VotingDetails {
@@ -19,6 +22,7 @@ export default function VotingDetails({ params }: VotingDetails) {
   const { id: votingId } = use(params);
   const [voting, setVoting] = useState<Voting | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [winnerCandidate, setWinnerCandidate] = useState<Candidate | null>(null);
 
   useEffect(() => {
     api.get(`voting/${votingId}`)
@@ -32,12 +36,20 @@ export default function VotingDetails({ params }: VotingDetails) {
       .catch(err => console.error('Erro ao buscar votação:', err));
   }, []);
 
+  useEffect(() => {
+    if (voting?.status === STATUS.finalized) {
+      api.get(`winner/${votingId}`)
+        .then(res => setWinnerCandidate(res.data))
+        .catch(err => console.error('Erro ao buscar vencedor:', err));
+    }
+  }, [voting, votingId]);
+
   const { totalVotes, candidatesWithPercentage } = calculateVotePercentages(candidates);
 
-  const barColors = ["#3f88c5", "#55a630", "#f22b29"]
+  const barColors = ["#3f88c5", "#55a630", "#f22b29", "#e7bd00", "#e67a16"]
 
   const chartData = candidatesWithPercentage.map((c, i) => ({
-    name: c.name,
+    name: c.name.length > 10 ? `${c.name.slice(0, 7)}...` : c.name,
     votes: c.votes,
     color: barColors[i % barColors.length],
   }))
@@ -65,13 +77,13 @@ export default function VotingDetails({ params }: VotingDetails) {
       </header>
 
       <section className="flex flex-col gap-4 sm:flex-row">
-        <article className="flex-[2] min-w-0">
-          <Card className="">
+        <article className="flex-[2] min-w-0 flex flex-col gap-4">
+          <Card>
             <CardHeader className="font-semibold text-lg">Candidatos</CardHeader>
             <CardContent className="flex flex-col gap-2 sm:flex-row flex-wrap">
               {candidatesWithPercentage.map((c, i) => {
                 const color = barColors[i % barColors.length]
-                const bgColorWithOpacity = `${color}30`
+                const bgColorWithOpacity = `${color}20`
 
                 return (
                   <Card
@@ -83,15 +95,24 @@ export default function VotingDetails({ params }: VotingDetails) {
                       <FaUser size={30} className="text-gray-400" />
                     </div>
                     <h1 className="font-medium mt-1">{c.name}</h1>
-                    <p className="text-gray-600 font-bold">Nº {c.number}</p>
+                    {c.number != 0 && <p className="text-gray-600 font-bold">Nº {c.number}</p>}
                     {c.party && <p className="text-gray-500 text-sm">{c.party}</p>}
-                    <h2 className="font-bold text-2xl mt-3">{c.percentage.toFixed(2)}%</h2>
+                    <h2 style={{ color }} className="font-bold text-2xl mt-3">{c.percentage.toFixed(2)}%</h2>
                     <p className="text-gray-600">{c.votes} votos</p>
                   </Card>
                 )
               })}
             </CardContent>
           </Card>
+
+          <Card className="flex items-center gap-3 p-2">
+            <IoMdTrophy size={52} className="text-yellow-500"/>
+            <div>
+              <h2 className="text-lg font-bold">Candidato Vencedor</h2>
+              <p className="text-primary font-medium">{winnerCandidate?.name}</p>
+            </div>
+          </Card>
+
         </article>
 
         <article className="flex-[1] min-w-0">
@@ -104,11 +125,14 @@ export default function VotingDetails({ params }: VotingDetails) {
                   <XAxis
                     dataKey="name"
                     tickLine={false}
-                    tickMargin={10}
+                    tickMargin={25}
                     axisLine={false}
+                    angle={-45}
+                    textAnchor="start"
                   />
+
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend content={<ChartLegendContent />} />
+                  {/* <ChartLegend content={<ChartLegendContent />} /> */}
                   <Bar dataKey="votes" radius={4}>
                     {chartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -126,6 +150,7 @@ export default function VotingDetails({ params }: VotingDetails) {
               </p>
             </CardContent>
           </Card>
+
         </article>
       </section>
     </main>
