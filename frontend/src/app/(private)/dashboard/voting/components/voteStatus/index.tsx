@@ -1,10 +1,10 @@
 import { VotingStatus, StatusLabels } from "@/types/voting";
 
 export const StatusColors: Record<VotingStatus, string> = {
-  scheduled: "bg-yellow-200 text-yellow-700",
-  active: "bg-green-200 text-green-700",
-  finalized: "bg-blue-200 text-blue-700",
-  canceled: "bg-red-200 text-red-700",
+  scheduled: "bg-yellow-100 text-yellow-600",
+  active: "bg-green-100 text-green-600",
+  finalized: "bg-blue-100 text-blue-600",
+  canceled: "bg-red-100 text-red-600",
 };
 
 export function VoteStatus({ status }: { status: VotingStatus }) {

@@ -150,7 +150,6 @@ const votingController = {
       const candidate = await smartContract.methods
         .getCandidate(candidateId, votingId)
         .call();
-      console.log(candidate);
       return res.json(
         JSON.parse(
           JSON.stringify(candidate, (key, value) =>

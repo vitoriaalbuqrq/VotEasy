@@ -35,8 +35,6 @@ export function middleware(request: NextRequest) {
         Buffer.from(authToken.value.split(".")[1], "base64").toString()
       );
 
-      console.log("paylod", payload)
-
       if (payload.role !== "ORGANIZER") {
         const redirectUrl = request.nextUrl.clone();
         redirectUrl.pathname = "/votings";

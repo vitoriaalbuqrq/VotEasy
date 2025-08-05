@@ -3,7 +3,7 @@ import { Candidate } from "@/types/voting";
 import { CardWinnerCandidate } from "./components/cardWinnerCandidate";
 import { calculateVotePercentages } from "@/utils/result";
 import { IoMdTrophy } from "react-icons/io";
-import { FaUser } from "react-icons/fa6";
+import { Image } from "lucide-react";
 
 interface WinnerSectionProps {
   votingName: string;
@@ -26,10 +26,9 @@ export default function WinnerSection({ votingName, candidates, winnerCandidate 
         <div className="flex flex-col items-center gap-2">
           <p className="text-xl font-medium text-primary">{winnerCandidate.name}</p>
           <div className="relative flex justify-center items-center w-24 h-24 border rounded-full bg-gray-50">
-            <FaUser size={60} className="text-gray-400" />
+            <Image size={60} className="text-gray-400" />
             <IoMdTrophy size={40} className="text-yellow-500 absolute -right-2 -bottom-1"/>
           </div>
-          {/* <img src="/assets/images/img-trophy.png" alt="image-winner" className="w-[180px]" /> */}
         </div>
       </section>
       <section className="flex flex-col w-full gap-4">

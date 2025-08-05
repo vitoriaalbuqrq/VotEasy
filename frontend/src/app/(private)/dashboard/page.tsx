@@ -5,11 +5,12 @@ import { FaCheckCircle, FaClock, FaTimesCircle, FaVoteYea } from "react-icons/fa
 import { VoteItem } from "./voting/components/voteItem";
 import { StatusCard } from "./voting/components/statusCard";
 import api from "@/lib/axios/config";
-import { STATUS, Voting } from "@/types/voting";
+import { STATUS, Voting, VotingFilter } from "@/types/voting";
 import { formatTimestamp } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { SearchInput } from "@/app/(public)/votings/components/searchInput";
 import { useToast } from "@/hooks/use-toast";
+import { StatusFilterSelect } from "./components/statusFilterSelect";
 
 //TODO: Adiconar loading enquanto atualiza status apos cancelar
 //TODO: Mostrar apenas votações referente ao usuario
@@ -18,6 +19,7 @@ export default function Dashboard() {
   const [votings, setVotings] = useState<Voting[]>([]);
   const [search, setSearch] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<VotingFilter>("all");
 
   //TODO: Adicionar loading durante o cancelamento
   useEffect(() => {
@@ -52,9 +54,11 @@ export default function Dashboard() {
     canceled: votings.filter(v => v.status === STATUS.canceled).length,
   };
 
-  const filtered = votings.filter((v) =>
-    v.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = votings.filter((v) => {
+    const matchesSearch = v.name.toLowerCase().includes(search.toLowerCase());
+    const matchesFilter = statusFilter === "all" || v.status === statusFilter;
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <main>
@@ -95,13 +99,7 @@ export default function Dashboard() {
             <SearchInput value={search} onChange={setSearch} />
           </div>
 
-          <select className="border border-gray-300 rounded-full px-3 py-2 sm:ms-auto">
-            <option value="">Todos os status</option>
-            <option value="active">Ativo</option>
-            <option value="scheduled">Programado</option>
-            <option value="finalized">Finalizado</option>
-            <option value="canceled">Cancelado</option>
-          </select>
+          <StatusFilterSelect value={statusFilter} onChange={setStatusFilter}/>
 
           <LinkButton
             href="/dashboard/voting/new/multi-step-form"

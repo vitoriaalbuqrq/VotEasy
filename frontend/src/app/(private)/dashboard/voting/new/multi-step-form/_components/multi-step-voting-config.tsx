@@ -49,11 +49,6 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
     const candidateNames = candidates.map(c => c.name);
     const candidateNumbers = candidates.map(c => c.number ?? 0);
     const candidateParties = candidates.map(() => "");
-    
-    console.log("startDate:", values.startDate)
-    console.log("endDate:", values.endDate)
-    console.log("startTime:", values.startTime)
-    console.log("endTime:", values.endTime)
 
     //TODO: Verificar as datas e conversões
     const payload = {

@@ -1,6 +1,6 @@
 'use client'
 import { Candidate} from "@/types/voting";
-import { FaUser } from "react-icons/fa";
+import { Image } from "lucide-react";
 
 interface CardProps extends Candidate {
   votingId: string;
@@ -19,13 +19,13 @@ export function Card({ name, number, party, id, votingId, onVote, isLoading = fa
         className="rounded-full border shadow-sm"
       /> */}
       <div className="flex justify-center items-center w-20 h-20 border rounded-full bg-gray-50">
-        <FaUser size={50} className="text-gray-400" />
+        <Image size={50} className="text-gray-400" />
       </div>
       <h1 className="font-bold text-xl text-secondary">{name}</h1>
       {number != 0 && (
         <h2 className="font-bold text-gray-500">{number}</h2>
       )}
-      <div className="flex gap-3 w-full mt-2">
+      <div className="flex gap-3 w-full mt-auto">
         <button className="flex-1 px-5 py-2 font-bold uppercase border border-secondary text-secondary text-center rounded-full hover:opacity-90 transition-colors">
           Detalhes
         </button>
@@ -34,7 +34,7 @@ export function Card({ name, number, party, id, votingId, onVote, isLoading = fa
         onClick={() => onVote(id)}
         disabled={isLoading}
         className={`flex-1 px-5 py-2 font-bold uppercase bg-tertiary text-white text-center rounded-full transition-opacity duration-200 ${
-          isLoading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90 transition-colors"
+          isLoading ? "opacity-50 cursor-not-allowed" : "hover:brightness-90 focus:brightness-90"
         }`}
       >
         Votar

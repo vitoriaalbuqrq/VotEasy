@@ -12,7 +12,7 @@ export function VotingSection({ title, votings, emptyMessage }: VotingSectionPro
     <section className="w-full mt-10">
       <h2 className="font-medium text-2xl text-secondary mb-4">{title}</h2>
       {votings.length > 0 ? (
-        <div className="flex gap-7 flex-wrap items-stretch">
+        <div className="flex gap-7 flex-wrap items-stretch justify-start">
           {votings.map((voting) => (
             <VotingCard
               key={voting.id}

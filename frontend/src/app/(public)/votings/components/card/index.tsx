@@ -51,7 +51,7 @@ export function VotingCard({ id, name, status, description, startDate, endDate }
       >
         <Card className="max-w-[300px] h-full flex flex-col">
           <CardHeader>
-            <img src="/assets/images/img-voting-padrao.jpg" className="h-[180px] w-auto object-cover rounded-sm" />
+            <img src="/assets/images/img-voting-padrao.jpg" className="h-[150px] w-auto object-cover rounded-sm" />
             <Progress value={progress} className="h-2" />
             <div className="text-gray-400 flex justify-between text-sm">
               <p>{formatTimestamp(startDate)}</p>
@@ -59,7 +59,7 @@ export function VotingCard({ id, name, status, description, startDate, endDate }
             </div>
           </CardHeader>
           <CardContent className="px-5 flex flex-col gap-1 h-full">
-            <h1 className="font-semibold text-xl text-secondary line-clamp-2">{name}</h1>
+            <h1 className="font-semibold text-lg text-secondary line-clamp-2">{name}</h1>
             <p className="text-gray-600 line-clamp-3">{description}</p>
             <FaArrowRightLong size={22} className="ms-auto mt-auto text-primary" />
           </CardContent>

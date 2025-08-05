@@ -4,14 +4,12 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { BarChart, CartesianGrid, XAxis, Bar, Cell, LabelList } from "recharts"
-import { FaUser } from "react-icons/fa"
 import { Candidate, STATUS, Voting } from "@/types/voting"
 import api from "@/lib/axios/config"
 import { VoteStatus } from "../components/voteStatus"
 import { calculateVotePercentages } from "@/utils/result"
-import { Trophy, TrophyIcon } from "lucide-react"
-import { FaTrophy } from "react-icons/fa6"
-import { IoIosTrophy, IoMdTrophy } from "react-icons/io"
+import { Image } from "lucide-react"
+import { IoMdTrophy } from "react-icons/io"
 
 interface VotingDetails {
   params: Promise<{ id: string }>;
@@ -91,7 +89,7 @@ export default function VotingDetails({ params }: VotingDetails) {
                     style={{ backgroundColor: bgColorWithOpacity }}
                   >
                     <div className="flex justify-center items-center w-14 h-14 border rounded-full bg-gray-50">
-                      <FaUser size={30} className="text-gray-400" />
+                      <Image size={30} className="text-gray-400" />
                     </div>
                     <h1 className="font-medium mt-1">{c.name}</h1>
                     {c.number != 0 && <p className="text-gray-600 font-bold">Nº {c.number}</p>}
@@ -104,13 +102,15 @@ export default function VotingDetails({ params }: VotingDetails) {
             </CardContent>
           </Card>
 
-          <Card className="flex items-center gap-3 p-2">
-            <IoMdTrophy size={52} className="text-yellow-500"/>
-            <div>
-              <h2 className="text-lg font-bold">Candidato Vencedor</h2>
-              <p className="text-primary font-medium">{winnerCandidate?.name}</p>
-            </div>
-          </Card>
+          {voting?.status === STATUS.finalized && (
+            <Card className="flex items-center gap-3 p-2">
+              <IoMdTrophy size={52} className="text-yellow-500" />
+              <div>
+                <h2 className="text-lg font-bold">Candidato Vencedor</h2>
+                <p className="text-primary font-medium">{winnerCandidate?.name}</p>
+              </div>
+            </Card>
+          )}
 
         </article>
 

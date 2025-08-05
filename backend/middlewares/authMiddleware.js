@@ -5,7 +5,6 @@ const checkToken = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
-    console.log("Token não encontrado!");
     return res.status(401).json({ msg: "Acesso negado!" });
   }
 

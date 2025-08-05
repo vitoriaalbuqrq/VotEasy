@@ -43,9 +43,9 @@ export default function VotingSection({ votingName, votingDescription, votingId,
         <LoadingSpinner />
       )}
       <section className="flex justify-center gap-3 flex-wrap my-8">
-        <header className="mb-14 text-center px-5">
+        <header className="mb-14 text-center px-5 w-full">
           <h1 className="font-bold text-2xl sm:text-3xl text-secondary">
-            {votingName}: Quem você quer que ganhe?
+            {votingName}
           </h1>
           <p className="text-gray-500 mt-3">{votingDescription}</p>
         </header>
