@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { StatusFilterSelect } from "./components/statusFilterSelect";
 
 //TODO: Adiconar loading enquanto atualiza status apos cancelar
-//TODO: Mostrar apenas votações referente ao usuario
 export default function Dashboard() {
   const { toast } = useToast();
   const [votings, setVotings] = useState<Voting[]>([]);
@@ -93,7 +92,6 @@ export default function Dashboard() {
       </section>
       <section className="mt-10">
 
-        {/* TODO: implementar busca e filtros */}
         <div className="flex flex-col justify-start items-start rounded-t-lg px-3 py-5 bg-white sm:flex-row sm:items-center gap-4">
           <div className="w-full sm:w-1/2">
             <SearchInput value={search} onChange={setSearch} />

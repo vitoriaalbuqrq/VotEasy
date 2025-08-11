@@ -106,7 +106,6 @@ contract Voteasy {
         emit Voted(_votingId, _candidateId);
     }
 
-    //TODO: Alterar e corrigir para calcular o vencedor corretamente
     function finalizeVoting(uint _votingId) public {
         Voting storage v = votings[_votingId];
         require(!v.isCanceled, "Votacao cancelada");

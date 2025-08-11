@@ -2,8 +2,6 @@ import { Container } from "@/components/container";
 import VotingSection from "./VotingSection";
 import api from "@/lib/axios/config";
 import { Candidate, STATUS, Voting } from "@/types/voting";
-import { useToast } from "@/hooks/use-toast";
-import { use } from "react";
 import WinnerSection from "./WinnerSection";
 
 interface VotingPageProps {

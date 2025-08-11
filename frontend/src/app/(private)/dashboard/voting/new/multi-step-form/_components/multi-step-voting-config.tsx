@@ -50,7 +50,6 @@ const saveFormData: SubmitHandler<VotingFormType> = async (values) => {
     const candidateNumbers = candidates.map(c => c.number ?? 0);
     const candidateParties = candidates.map(() => "");
 
-    //TODO: Verificar as datas e conversões
     const payload = {
       ...rest,
       startDate: values.startDate.split("T")[0],

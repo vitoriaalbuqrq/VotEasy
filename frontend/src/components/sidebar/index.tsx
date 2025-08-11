@@ -52,7 +52,7 @@ export function Sidebar() {
               <TooltipContent side="right">Início</TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href="/dashboard/votings"
@@ -63,7 +63,7 @@ export function Sidebar() {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Minhas votações</TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
 
             <Tooltip>
               <TooltipTrigger asChild className="mt-auto">

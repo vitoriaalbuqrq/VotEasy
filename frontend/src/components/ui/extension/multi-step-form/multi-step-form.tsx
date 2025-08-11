@@ -16,7 +16,7 @@ const MultiStepForm = ({ title, description, children }: Props) => {
   const { form, onSubmit, onErrors } = useMultiStepForm(VotingFormContext);
   return (
     <Form {...form}>
-      <form onSubmit={form?.handleSubmit(onSubmit, onErrors)} className="w-full px-3 md:w-[60%]">
+      <form onSubmit={form?.handleSubmit(onSubmit, onErrors)} className="w-full px-3 md:w-[50%]">
         <motion.div
           variants={container}
           className="flex flex-col gap-2"

@@ -1,9 +1,11 @@
 # 🗳️ VotEasy - Sistema de Votação Online com Blockchain
 
-O **Voteasy** é uma aplicação web que permite criar, gerenciar e participar de votações online de forma segura e transparente utilizando **smart contracts em Ethereum**. Ideal para eleições estudantis, votações em conselhos, enquetes públicas, entre outras.
+O **VotEasy** é uma aplicação web que permite criar, gerenciar e participar de votações online de forma prática, garantindo transparência, imutabilidade e confiabilidade com o uso da blockchain, utilizando **smart contracts em Ethereum**. 
 
 ## 🚀 Funcionalidades
-- Cadastro e autenticação de usuários (votantes e organizadores) com verificação por e-mail ou conta Google, utilizando JWT;
+
+- API que interage com o smart contract usando uma carteira única do sistema. Assim, os usuários conseguem votar sem precisar pagar taxas de transação ou conectar suas próprias carteiras, todo o custo fica centralizado nesse endereço.
+- Cadastro e autenticação de usuários (votantes e organizadores) com confirmação via e-mail ou conta Google, utilizando JWT;
 - Dashboard para organizadores criarem e gerenciarem suas votações;
 - Registro na blockchain de todas as votações e votos, garantindo integridade, transparência e imutabilidade;
 - Votações públicas acessíveis a todos os votantes autenticados;

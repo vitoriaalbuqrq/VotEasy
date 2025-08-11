@@ -16,28 +16,6 @@ export const StatusLabels: Record<VotingStatus, string> = {
 
 export type VotingFilter = VotingStatus | "all";
 
-//TODO: Apagar os tipos que não serão mais utilizados
-export enum Status {
-  Active = "0",
-  Scheduled = "1",
-  Finalized = "2",
-  Canceled = "3",
-}
-
-export function getStatusLabel(status: Status): string {
-  switch (status) {
-    case Status.Active:
-      return "Ativa";
-    case Status.Scheduled:
-      return "Programada";
-    case Status.Finalized:
-      return "Finalizada";
-    case Status.Canceled:
-      return "Cancelada";
-    default:
-      return "Desconhecido";
-  }
-}
 
 export interface Voting {
   id: string;

@@ -11,7 +11,6 @@ const { getUserHash } = require("../utils/userHash");
 
 const UINT_MAX = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
-//TODO: Melhorar as validações e tratamentos de erros
 function initContract() {
   const network = process.env.ETHEREUM_NETWORK;
 
